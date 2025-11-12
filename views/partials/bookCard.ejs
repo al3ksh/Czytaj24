@@ -1,0 +1,77 @@
+<% const price = Number(book.discountedPrice ?? book.price ?? 0).toFixed(2); %>
+<% const basePrice = Number(book.price ?? price).toFixed(2); %>
+<% const rating = (book.aggregatedRating ?? 4.7).toFixed(1); %>
+<% const badges = book.badges || []; %>
+
+<div class="glass-panel flex flex-col gap-4 p-6">
+  <div class="flex items-start justify-between">
+    <span class="badge bg-brand-muted/60 text-brand-dark dark:text-amber-200 text-xs tracking-wide">
+      <%= book.category || 'Literatura' %>
+    </span>
+    <% if (book.discountPercent) { %>
+      <span class="badge bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">
+        -<%= book.discountPercent %>%
+      </span>
+    <% } else if (book.isNew) { %>
+      <span class="badge bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-200">Nowość</span>
+    <% } %>
+  </div>
+
+  <div>
+    <h3 class="font-display text-lg text-slate-900 dark:text-white"><%= book.title %></h3>
+    <p class="text-sm text-slate-500 dark:text-slate-400">by <%= book.author %></p>
+  </div>
+
+  <div class="flex items-center gap-2 text-sm text-amber-500">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.88.99 6.85L12 17.77 6.01 21l.99-6.85-5-4.88 6.91-1.01z" />
+    </svg>
+    <span class="font-semibold"><%= rating %></span>
+    <span class="text-slate-400">•</span>
+    <span class="uppercase text-slate-500 dark:text-slate-400"><%= book.language === 'angielski' ? 'EN' : 'PL' %></span>
+  </div>
+
+  <p class="text-sm text-slate-600 dark:text-slate-300 line-clamp-2">
+    <%= book.description || 'Wyjątkowa pozycja dla wymagających czytelników.' %>
+  </p>
+
+  <% if (badges.length) { %>
+    <div class="flex flex-wrap gap-2 text-xs font-medium text-slate-500 dark:text-slate-300">
+      <% badges.forEach((badge) => { %>
+        <span class="badge bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-200"><%= badge %></span>
+      <% }); %>
+    </div>
+  <% } %>
+
+  <div class="flex items-baseline gap-3">
+    <span class="text-2xl font-semibold text-slate-900 dark:text-white"><%= price %> PLN</span>
+    <% if (book.discountPercent) { %>
+      <span class="text-sm text-slate-400 line-through"><%= basePrice %> PLN</span>
+    <% } %>
+  </div>
+
+  <div class="mt-auto flex flex-wrap gap-3 text-sm">
+    <a
+      href="/book/<%= book._id %>"
+      class="flex-1 rounded-full border border-slate-200 px-4 py-2 text-center font-medium text-slate-700 transition hover:border-slate-400 dark:border-slate-700 dark:text-slate-100"
+    >
+      Szczegóły
+    </a>
+    <% if (book.stock > 0) { %>
+      <form method="POST" action="/cart" class="add-to-cart-form flex-1">
+        <input type="hidden" name="bookId" value="<%= book._id %>" />
+        <input type="hidden" name="quantity" value="1" />
+        <button
+          type="submit"
+          class="w-full rounded-full bg-brand px-4 py-2 font-semibold text-white shadow transition hover:bg-brand-dark"
+        >
+          Dodaj
+        </button>
+      </form>
+    <% } else { %>
+      <span class="flex-1 rounded-full bg-rose-50 px-4 py-2 text-center font-medium text-rose-600 dark:bg-rose-500/20 dark:text-rose-200">
+        Brak na stanie
+      </span>
+    <% } %>
+  </div>
+</div>

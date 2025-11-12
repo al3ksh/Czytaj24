@@ -1,0 +1,139 @@
+<%- include('partials/layoutStart', {
+  pageTitle: 'Moj profil',
+  metaDescription: 'Zarzadzaj kontem Czytaj24: zobacz szczegoly konta i zmieniaj haslo.',
+  showSearch: false,
+  bodyClass: 'min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100'
+}) %>
+
+<main class="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
+  <div class="mb-10">
+    <p class="text-xs uppercase tracking-[0.4em] text-brand">Twoje konto</p>
+    <h1 class="mt-2 font-display text-3xl text-slate-900 dark:text-white">Profil uzytkownika</h1>
+    <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Sprawdz stan konta i aktualizuj haslo, aby zadbac o bezpieczenstwo zakupow.</p>
+  </div>
+
+  <% if (successMessage) { %>
+    <div class="mb-6 rounded-2xl border border-emerald-300/40 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200">
+      <p><%= successMessage %></p>
+    </div>
+  <% } %>
+
+  <% if (errors?.general) { %>
+    <div class="mb-6 rounded-2xl border border-rose-300/40 bg-rose-50 px-4 py-3 text-sm text-rose-600 dark:border-rose-500/40 dark:bg-rose-500/20 dark:text-rose-100">
+      <p><%= errors.general %></p>
+    </div>
+  <% } %>
+
+  <% if (profile) { %>
+    <section class="grid gap-8 lg:grid-cols-2">
+      <div class="rounded-3xl border border-slate-200/70 bg-white p-8 shadow-soft dark:border-white/10 dark:bg-slate-900">
+        <div class="flex items-center gap-3">
+          <img
+            src="/portraitplaceholder.png"
+            alt="Zdjecie profilu"
+            class="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-slate-200/70 dark:ring-white/10"
+            loading="lazy"
+          />
+          <div>
+            <h2 class="text-sm font-semibold text-slate-900 dark:text-white"><%= profile.name %></h2>
+            <p class="mt-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-400 tracking-wide"><%= profile.roleLabel %></p>
+          </div>
+        </div>
+        <div class="mt-4 h-px w-full bg-slate-200/70 dark:bg-white/10"></div>
+        <h2 class="mt-4 text-sm font-semibold text-slate-900 dark:text-white">Dane konta</h2>
+        <dl class="mt-6 space-y-5 text-sm">
+          <div>
+            <dt class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Imie i nazwisko</dt>
+            <dd class="mt-1 text-base font-medium text-slate-900 dark:text-slate-100"><%= profile.name %></dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Email</dt>
+            <dd class="mt-1 text-base text-slate-900 dark:text-slate-100"><%= profile.email %></dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Rola</dt>
+            <dd class="mt-1 text-base text-slate-900 dark:text-slate-100"><%= profile.roleLabel %></dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Konto utworzone</dt>
+            <dd class="mt-1 text-base text-slate-900 dark:text-slate-100">
+              <% if (profile.createdAtISO) { %>
+                <time datetime="<%= profile.createdAtISO %>"><%= profile.createdAtDisplay %></time>
+              <% } else { %>
+                Brak danych
+              <% } %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="rounded-3xl border border-slate-200/70 bg-white p-8 shadow-soft dark:border-white/10 dark:bg-slate-900">
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Zmien haslo</h2>
+        <form method="POST" action="/profil/haslo" class="mt-6 space-y-5">
+          <div>
+            <label for="currentPassword" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              Obecne haslo
+            </label>
+            <input
+              id="currentPassword"
+              type="password"
+              name="currentPassword"
+              autocomplete="current-password"
+              class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+            <% if (errors?.currentPassword) { %>
+              <p class="mt-2 text-xs font-medium text-rose-600 dark:text-rose-200"><%= errors.currentPassword %></p>
+            <% } %>
+          </div>
+
+          <div>
+            <label for="newPassword" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              Nowe haslo
+            </label>
+            <input
+              id="newPassword"
+              type="password"
+              name="newPassword"
+              autocomplete="new-password"
+              class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+            <% if (errors?.newPassword) { %>
+              <p class="mt-2 text-xs font-medium text-rose-600 dark:text-rose-200"><%= errors.newPassword %></p>
+            <% } %>
+          </div>
+
+          <div>
+            <label for="confirmPassword" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              Powtorz nowe haslo
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              name="confirmPassword"
+              autocomplete="new-password"
+              class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+            <% if (errors?.confirmPassword) { %>
+              <p class="mt-2 text-xs font-medium text-rose-600 dark:text-rose-200"><%= errors.confirmPassword %></p>
+            <% } %>
+          </div>
+
+          <p class="text-xs text-slate-500 dark:text-slate-400">Nowe haslo musi miec przynajmniej 8 znakow.</p>
+
+          <button
+            type="submit"
+            class="w-full rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+          >
+            Zapisz zmiany
+          </button>
+        </form>
+      </div>
+    </section>
+  <% } else { %>
+    <section class="rounded-3xl border border-amber-200/60 bg-white/90 px-6 py-8 text-center text-sm text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
+      <p>Nie mozemy teraz wyswietlic danych profilu. Odswiez strone lub sprobuj ponownie pozniej.</p>
+    </section>
+  <% } %>
+</main>
+
+<%- include('partials/layoutEnd') %>

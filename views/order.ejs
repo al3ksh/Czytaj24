@@ -1,0 +1,303 @@
+<%- include('partials/layoutStart', {
+  pageTitle: 'Checkout',
+  metaDescription: 'Podsumowanie zamówienia i wybór metody płatności.',
+  showSearch: false,
+  bodyClass: 'min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50',
+  wrapperClass: 'min-h-screen'
+}) %>
+
+<main class="mx-auto max-w-5xl px-4 py-10">
+  <header class="mb-8">
+    <p class="text-xs uppercase tracking-[0.35em] text-brand">Checkout</p>
+    <h1 class="font-display text-3xl text-slate-900 dark:text-white">Podsumowanie zamówienia</h1>
+  </header>
+
+  <% if (items.length === 0) { %>
+    <section class="glass-panel p-10 text-center text-slate-900 dark:text-slate-200">
+      <p class="text-lg font-semibold">Koszyk jest pusty.</p>
+      <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Dodaj książki, aby dokończyć proces zamówienia.</p>
+      <a
+        href="/"
+        class="mt-6 inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark"
+      >
+        Wracaj na stronę główną
+      </a>
+    </section>
+  <% } else { %>
+    <section class="glass-panel p-8 text-slate-900 dark:text-slate-50">
+      <div class="flex flex-col gap-4 border-b border-slate-200 pb-6 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.35em] text-brand">Krok 1</p>
+          <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Twoje tytuły</h2>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-400">Łączna kwota: <strong class="text-slate-900 dark:text-white"><%= Number(total).toFixed(2) %> PLN</strong></p>
+      </div>
+      <ul class="divide-y divide-slate-200 dark:divide-white/5">
+        <% items.forEach((item) => { %>
+          <li class="flex items-center justify-between py-4 text-sm text-slate-600 dark:text-slate-300">
+            <div>
+              <p class="font-medium text-slate-900 dark:text-white"><%= item.title %></p>
+              <p class="text-xs text-slate-500 dark:text-slate-500">x<%= item.quantity %> • <%= Number(item.price).toFixed(2) %> PLN</p>
+            </div>
+            <span class="text-lg font-semibold text-slate-900 dark:text-white"><%= Number(item.price * item.quantity).toFixed(2) %> PLN</span>
+          </li>
+        <% }) %>
+      </ul>
+    </section>
+
+    <section class="mt-8 glass-panel p-8 text-slate-900 dark:text-slate-50">
+      <div class="flex flex-col gap-2">
+        <p class="text-xs uppercase tracking-[0.35em] text-brand">Krok 2</p>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Dane odbiorcy i płatność</h2>
+      </div>
+      <form method="POST" action="/order/confirm" class="mt-6 space-y-6" id="checkout-form">
+        <div class="grid gap-5 md:grid-cols-2">
+          <div>
+            <label for="name" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              Imię i nazwisko <span class="text-rose-500">*</span>
+            </label>
+            <input
+              id="name"
+              type="text"
+              name="name"
+              class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              required
+            />
+          </div>
+
+          <div>
+            <label for="phone" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              Numer telefonu <span class="text-rose-500">*</span>
+            </label>
+            <input
+              id="phone"
+              type="tel"
+              name="phone"
+              placeholder="np. 123-456-789"
+              pattern="[0-9\s\-+()]+"
+              class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="address" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+            Ulica i numer domu/mieszkania <span class="text-rose-500">*</span>
+          </label>
+          <input
+            id="address"
+            type="text"
+            name="street"
+            placeholder="np. ul. Główna 15/3"
+            class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            required
+          />
+        </div>
+
+        <div class="grid gap-5 md:grid-cols-2">
+          <div>
+            <label for="city" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              Miasto <span class="text-rose-500">*</span>
+            </label>
+            <input
+              id="city"
+              type="text"
+              name="city"
+              class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              required
+            />
+          </div>
+
+          <div>
+            <label for="postal" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              Kod pocztowy <span class="text-rose-500">*</span>
+            </label>
+            <input
+              id="postal"
+              type="text"
+              name="postalCode"
+              placeholder="00-000"
+              pattern="[0-9]{2}-[0-9]{3}"
+              class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="border-t border-slate-200 pt-6 dark:border-slate-700">
+          <label for="delivery" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+            Sposób dostawy <span class="text-rose-500">*</span>
+          </label>
+          <select
+            id="delivery"
+            name="delivery"
+            class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            required
+          >
+            <option value="">-- Wybierz sposób dostawy --</option>
+            <option value="courier">Kurier - 15 PLN (1-2 dni robocze)</option>
+            <option value="inpost">Paczkomat InPost - 12 PLN (1-2 dni robocze)</option>
+            <option value="post">Poczta Polska - 10 PLN (3-5 dni roboczych)</option>
+            <option value="pickup">Odbiór osobisty - 0 PLN</option>
+          </select>
+        </div>
+
+        <div class="border-t border-slate-200 pt-6 dark:border-slate-700">
+          <label for="payment" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+            Metoda płatności <span class="text-rose-500">*</span>
+          </label>
+          <select
+            id="payment"
+            name="paymentMethod"
+            class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            required
+          >
+            <option value="">-- Wybierz metodę płatności --</option>
+            <option value="card">Karta płatnicza / Przelew</option>
+            <option value="blik">BLIK</option>
+            <option value="cash">Gotówka przy odbiorze</option>
+          </select>
+        </div>
+
+        
+        <div id="card-fields" class="hidden space-y-5 rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-900/50">
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Dane karty płatniczej</h3>
+          <div>
+            <label for="cardNumber" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              Numer karty <span class="text-rose-500">*</span>
+            </label>
+            <input
+              id="cardNumber"
+              type="text"
+              name="cardNumber"
+              placeholder="1234 5678 9012 3456"
+              pattern="[0-9\s]{13,19}"
+              maxlength="19"
+              class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+          </div>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div>
+              <label for="cardExpiry" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                Data ważności <span class="text-rose-500">*</span>
+              </label>
+              <input
+                id="cardExpiry"
+                type="text"
+                name="cardExpiry"
+                placeholder="MM/RR"
+                pattern="(0[1-9]|1[0-2])\/[0-9]{2}"
+                maxlength="5"
+                class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              />
+            </div>
+            <div>
+              <label for="cardCvv" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                CVV <span class="text-rose-500">*</span>
+              </label>
+              <input
+                id="cardCvv"
+                type="text"
+                name="cardCvv"
+                placeholder="123"
+                pattern="[0-9]{3,4}"
+                maxlength="4"
+                class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              />
+            </div>
+          </div>
+        </div>
+
+        
+        <div id="blik-fields" class="hidden space-y-5 rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-900/50">
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Kod BLIK</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400">Wpisz 6-cyfrowy kod z aplikacji bankowej</p>
+          <div>
+            <label for="blikCode" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              Kod BLIK <span class="text-rose-500">*</span>
+            </label>
+            <input
+              id="blikCode"
+              type="text"
+              name="blikCode"
+              placeholder="000 000"
+              pattern="[0-9]{6}"
+              maxlength="6"
+              class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="mt-4 w-full inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+        >
+          Potwierdź i zapłać
+        </button>
+      </form>
+    </section>
+  <% } %>
+</main>
+
+<script>
+  
+  const paymentSelect = document.getElementById('payment');
+  const cardFields = document.getElementById('card-fields');
+  const blikFields = document.getElementById('blik-fields');
+  const cardInputs = cardFields?.querySelectorAll('input') || [];
+  const blikInputs = blikFields?.querySelectorAll('input') || [];
+
+  paymentSelect?.addEventListener('change', (e) => {
+    const method = e.target.value;
+    
+    
+    cardFields?.classList.add('hidden');
+    blikFields?.classList.add('hidden');
+    
+    
+    cardInputs.forEach(input => input.removeAttribute('required'));
+    blikInputs.forEach(input => input.removeAttribute('required'));
+    
+    
+    if (method === 'card') {
+      cardFields?.classList.remove('hidden');
+      cardInputs.forEach(input => input.setAttribute('required', 'required'));
+    } else if (method === 'blik') {
+      blikFields?.classList.remove('hidden');
+      blikInputs.forEach(input => input.setAttribute('required', 'required'));
+    }
+  });
+
+  
+  document.getElementById('cardNumber')?.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\s/g, '');
+    let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+    e.target.value = formatted;
+  });
+
+
+  document.getElementById('cardExpiry')?.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+      value = value.slice(0, 2) + '/' + value.slice(2, 4);
+    }
+    e.target.value = value;
+  });
+
+
+  document.getElementById('postal')?.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+      value = value.slice(0, 2) + '-' + value.slice(2, 5);
+    }
+    e.target.value = value;
+  });
+
+
+  document.getElementById('blikCode')?.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+  });
+</script>
+
+<%- include('partials/layoutEnd') %>

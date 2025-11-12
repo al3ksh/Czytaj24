@@ -1,0 +1,17 @@
+      <% const safeShowFooter = (typeof showFooter !== 'undefined') ? showFooter : true; %>
+      <% if (safeShowFooter) { %>
+        <%- include('./footer', { userRole: typeof userRole !== 'undefined' ? userRole : null }) %>
+      <% } %>
+
+      <div
+        id="toast"
+        class="pointer-events-none fixed bottom-6 right-6 hidden rounded-2xl bg-slate-900/90 px-5 py-3 text-sm font-semibold text-white shadow-2xl"
+      ></div>
+    </div>
+    <script src="/js/storefront.js" defer></script>
+    <% const safeExtraScripts = (typeof extraScripts !== 'undefined' && Array.isArray(extraScripts)) ? extraScripts : []; %>
+    <% safeExtraScripts.forEach((scriptSrc) => { %>
+      <script src="<%= scriptSrc %>" defer></script>
+    <% }); %>
+  </body>
+</html>

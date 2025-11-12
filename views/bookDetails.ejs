@@ -1,0 +1,108 @@
+<%- include('partials/layoutStart', {
+  pageTitle: book.title,
+  metaDescription: `Poznaj szczegóły książki ${book.title} - ${book.author}.`,
+  showSearch: true,
+  bodyClass: 'min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50',
+  wrapperClass: 'min-h-screen'
+}) %>
+
+<main class="mx-auto max-w-5xl px-4 pt-10 text-slate-900 dark:text-slate-100">
+  <a href="/" class="inline-flex items-center gap-2 text-sm text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+    <span aria-hidden="true">←</span> Wróć do katalogu
+  </a>
+
+  <section class="mt-6 grid gap-10 md:grid-cols-[0.9fr_1.1fr]">
+    <div class="glass-panel flex flex-col items-center justify-center p-8">
+      <img src="/bookspng.png" alt="<%= book.title %>" class="w-48 rounded-2xl shadow-2xl shadow-black/20 dark:shadow-black/40" />
+      <div class="mt-6 space-y-2 text-center">
+        <p class="text-xs uppercase tracking-[0.35em] text-brand"><%= book.category || 'Literatura' %></p>
+        <h1 class="font-display text-3xl text-slate-900 dark:text-white"><%= book.title %></h1>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Autor: <%= book.author %></p>
+        <% if (book.tags && book.tags.length) { %>
+          <div class="mt-2 flex flex-wrap justify-center gap-2 text-xs">
+            <% book.tags.forEach((tag) => { %>
+              <span class="rounded-full px-3 py-1 bg-slate-100 text-slate-700 dark:bg-white/5 dark:text-slate-200"><%= tag %></span>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div class="glass-panel p-8 text-slate-900 dark:text-slate-50">
+        <div class="flex items-center gap-3">
+          <p class="text-3xl font-semibold text-slate-900 dark:text-white">
+            <%= Number(book.discountedPrice ?? book.price).toFixed(2) %> PLN
+          </p>
+          <% if (book.discountPercent) { %>
+            <p class="text-sm text-slate-400 line-through"><%= Number(book.price).toFixed(2) %> PLN</p>
+            <span class="badge bg-emerald-500/15 text-emerald-300">-<%= book.discountPercent %>%</span>
+          <% } %>
+        </div>
+        <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">
+          <%= book.description || 'Ta pozycja jest częścią nowej kuracji Czytaj24. Dodaj ją do swojego koszyka i zainspiruj klientów kompletnym flow zakupowym.' %>
+        </p>
+        <dl class="mt-6 grid gap-3 text-sm text-slate-600 dark:text-slate-300 sm:grid-cols-2">
+          <div>
+            <dt class="text-xs uppercase tracking-[0.3em] text-slate-400">Język</dt>
+            <dd class="font-semibold text-slate-900 dark:text-slate-100"><%= book.language === 'angielski' ? 'Angielski' : 'Polski' %></dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-[0.3em] text-slate-400">Dostępność</dt>
+            <dd class="font-semibold text-slate-900 dark:text-slate-100"><%= book.stock %> szt.</dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-[0.3em] text-slate-400">Ocena społeczności</dt>
+            <dd class="font-semibold text-slate-900 dark:text-slate-100"><%= (book.aggregatedRating || 4.7).toFixed(1) %> / 5.0</dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-[0.3em] text-slate-400">Status</dt>
+            <dd class="font-semibold text-slate-900 dark:text-slate-100">
+              <%= book.stock > 0 ? 'W magazynie' : 'Brak na stanie' %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <% if (userName && book.stock > 0) { %>
+        <div class="glass-panel p-8">
+          <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Dodaj do koszyka</h2>
+          <form method="POST" action="/cart" class="add-to-cart-form mt-4 flex flex-col gap-4">
+            <input type="hidden" name="bookId" value="<%= book._id %>" />
+            <label class="text-sm text-slate-500 dark:text-slate-300">
+              Ilość
+              <input
+                type="number"
+                name="quantity"
+                min="1"
+                max="<%= book.stock %>"
+                value="1"
+                class="mt-2 w-32 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 focus:border-brand focus:ring-brand dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+              />
+            </label>
+            <button
+              type="submit"
+              class="rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark"
+            >
+              Dodaj do koszyka
+            </button>
+          </form>
+        </div>
+      <% } else if (!userName) { %>
+        <div class="glass-panel p-8 text-center text-slate-900 dark:text-white">
+          <p class="font-semibold">Zaloguj się, aby dodać książkę do koszyka.</p>
+          <div class="mt-4 flex gap-3 justify-center">
+            <a href="/login" class="rounded-full border px-4 py-2 text-sm font-semibold transition border-slate-300 text-slate-700 hover:border-slate-500 dark:border-white/10 dark:text-white dark:hover:bg-white/10">Logowanie</a>
+            <a href="/register" class="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark">Rejestracja</a>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="glass-panel p-8 text-center text-rose-200">
+          <p class="font-semibold">Ten tytuł jest chwilowo niedostępny.</p>
+        </div>
+      <% } %>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/layoutEnd') %>

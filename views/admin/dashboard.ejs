@@ -1,0 +1,90 @@
+<%- include('../partials/layoutStart', {
+  pageTitle: 'Panel Admina',
+  metaDescription: 'Dashboard administracyjny księgarni Czytaj24',
+  showSearch: false,
+  bodyClass: 'min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50',
+  wrapperClass: 'min-h-screen',
+  userName
+}) %>
+
+<main class="mx-auto max-w-7xl px-4 py-10">
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.4em] text-brand">Admin Panel</p>
+      <h1 class="font-display text-3xl text-slate-900 dark:text-white">Dashboard</h1>
+    </div>
+    <a href="/" class="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">← Wróć do sklepu</a>
+  </div>
+
+  
+  <div class="grid gap-6 md:grid-cols-3 mb-10">
+    <div class="glass-panel p-6">
+      <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Książki w bazie</p>
+      <p class="mt-2 text-4xl font-bold text-slate-900 dark:text-white"><%= stats.totalBooks %></p>
+      <a href="/admin/books" class="mt-4 inline-block text-sm font-semibold text-brand hover:underline">Zarządzaj →</a>
+    </div>
+    <div class="glass-panel p-6">
+      <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Zamówienia</p>
+      <p class="mt-2 text-4xl font-bold text-slate-900 dark:text-white"><%= stats.totalOrders %></p>
+      <a href="/admin/orders" class="mt-4 inline-block text-sm font-semibold text-brand hover:underline">Zobacz wszystkie →</a>
+    </div>
+    <div class="glass-panel p-6">
+      <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Niski stan magazynowy</p>
+      <p class="mt-2 text-4xl font-bold text-rose-600 dark:text-rose-400"><%= stats.lowStockBooks %></p>
+      <a href="/admin/books" class="mt-4 inline-block text-sm font-semibold text-brand hover:underline">Sprawdź →</a>
+    </div>
+  </div>
+
+  
+  <div class="glass-panel p-6 mb-10">
+    <h2 class="text-xl font-semibold text-slate-900 dark:text-white mb-4">Szybkie akcje</h2>
+    <div class="flex flex-wrap gap-3">
+      <a href="/admin/books/new" class="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white shadow shadow-orange-500/40 hover:bg-brand-dark">
+        + Dodaj książkę
+      </a>
+      <a href="/admin/books" class="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:border-slate-500 dark:border-slate-600 dark:text-slate-300">
+        Lista książek
+      </a>
+      <a href="/admin/orders" class="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:border-slate-500 dark:border-slate-600 dark:text-slate-300">
+        Zamówienia
+      </a>
+    </div>
+  </div>
+
+  
+  <div class="glass-panel p-6">
+    <h2 class="text-xl font-semibold text-slate-900 dark:text-white mb-4">Ostatnie zamówienia</h2>
+    <% if (stats.recentOrders.length === 0) { %>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Brak zamówień</p>
+    <% } else { %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="border-b border-slate-200 dark:border-slate-700">
+            <tr class="text-left">
+              <th class="pb-3 font-semibold text-slate-700 dark:text-slate-300">ID</th>
+              <th class="pb-3 font-semibold text-slate-700 dark:text-slate-300">Data</th>
+              <th class="pb-3 font-semibold text-slate-700 dark:text-slate-300">Kwota</th>
+              <th class="pb-3 font-semibold text-slate-700 dark:text-slate-300">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+            <% stats.recentOrders.forEach(order => { %>
+              <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/50">
+                <td class="py-3 text-slate-600 dark:text-slate-400"><%= order._id.toString().slice(-8) %></td>
+                <td class="py-3 text-slate-600 dark:text-slate-400"><%= order.date ? new Date(order.date).toLocaleDateString('pl-PL') : '-' %></td>
+                <td class="py-3 font-semibold text-slate-900 dark:text-slate-100"><%= order.total.toFixed(2) %> PLN</td>
+                <td class="py-3">
+                  <span class="inline-block rounded-full px-3 py-1 text-xs font-semibold <%= order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300' : order.status === 'cancelled' ? 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300' : 'bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300' %>">
+                    <%= order.status %>
+                  </span>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/layoutEnd') %>

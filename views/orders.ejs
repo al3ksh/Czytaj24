@@ -1,0 +1,147 @@
+<%- include('partials/layoutStart', {
+  pageTitle: 'Zamówienia',
+  metaDescription: 'Przeglądaj i zarządzaj swoimi zamówieniami.',
+  showSearch: false,
+  bodyClass: 'min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50',
+  wrapperClass: 'min-h-screen'
+}) %>
+
+<main class="mx-auto max-w-6xl px-4 py-10">
+  <header class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.35em] text-brand">Panel klienta</p>
+      <h1 class="font-display text-3xl text-slate-900 dark:text-white">Twoje zamówienia</h1>
+    </div>
+    <a href="/" class="text-sm text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+      Wróć do sklepu →
+    </a>
+  </header>
+
+  <% if (!orders || orders.length === 0) { %>
+    <section class="mt-10 glass-panel p-10 text-center text-slate-900 dark:text-slate-200">
+      <p class="text-lg font-semibold text-slate-900 dark:text-white">Nie masz jeszcze żadnych zamówień.</p>
+      <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Dodaj coś do koszyka i przejdź pełny proces checkoutu.</p>
+      <a
+        href="/"
+        class="mt-6 inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark"
+      >
+        Odkryj katalog
+      </a>
+    </section>
+  <% } else { %>
+    <section class="mt-10 space-y-6">
+      <% orders.forEach((order) => { %>
+        <article
+          class="glass-panel p-6 text-slate-900 dark:text-slate-100"
+          data-order-id="<%= order._id %>"
+          data-status="<%= order.status %>"
+          data-cancel-deadline="<%= order.cancelDeadline ? new Date(order.cancelDeadline).getTime() : '' %>"
+        >
+          <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 dark:border-slate-700 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-[0.35em] text-brand">Zamówienie</p>
+              <h2 class="text-xl font-semibold text-slate-900 dark:text-white">#<%= order._id.toString().slice(-8) %></h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Złożone: <%= new Date(order.date).toLocaleString('pl-PL') %></p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs uppercase tracking-[0.35em] text-slate-500 dark:text-slate-500">Łączna wartość</p>
+              <p class="text-2xl font-semibold text-slate-900 dark:text-white">
+                <%= Number(order.total || order.subtotal || 0).toFixed(2) %> PLN
+              </p>
+              <% if (order.deliveryCost) { %>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                  (produkty: <%= Number(order.subtotal || 0).toFixed(2) %> PLN + dostawa: <%= Number(order.deliveryCost).toFixed(2) %> PLN)
+                </p>
+              <% } %>
+            </div>
+          </div>
+
+          <ul class="divide-y divide-slate-200 py-4 text-sm text-slate-700 dark:divide-slate-700 dark:text-slate-300">
+            <% order.items.forEach((item) => { %>
+              <li class="flex items-center justify-between py-2">
+                <span><%= item.title %> • x<%= item.quantity %></span>
+                <span class="text-slate-900 dark:text-slate-100"><%= Number(item.price * item.quantity).toFixed(2) %> PLN</span>
+              </li>
+            <% }) %>
+          </ul>
+
+          <div class="flex flex-col gap-4 border-t border-slate-200 pt-4 text-sm text-slate-600 dark:border-slate-700 dark:text-slate-400 sm:flex-row sm:items-start sm:justify-between">
+            <div class="flex-1 space-y-1">
+              <% if (order.customerInfo) { %>
+                <p><span class="text-slate-500 dark:text-slate-500">Odbiorca:</span> <%= order.customerInfo.name %></p>
+                <p><span class="text-slate-500 dark:text-slate-500">Telefon:</span> <%= order.customerInfo.phone %></p>
+                <p><span class="text-slate-500 dark:text-slate-500">Adres:</span> 
+                  <%= order.customerInfo.address.street %>, 
+                  <%= order.customerInfo.address.postalCode %> <%= order.customerInfo.address.city %>
+                </p>
+              <% } else { %>
+                <p><span class="text-slate-500 dark:text-slate-500">Adres:</span> <%= order.address || 'Brak danych' %></p>
+              <% } %>
+              
+              <% if (order.delivery) { %>
+                <p><span class="text-slate-500 dark:text-slate-500">Dostawa:</span> 
+                  <% if (order.delivery === 'courier') { %>Kurier
+                  <% } else if (order.delivery === 'inpost') { %>Paczkomat InPost
+                  <% } else if (order.delivery === 'post') { %>Poczta Polska
+                  <% } else if (order.delivery === 'pickup') { %>Odbiór osobisty
+                  <% } else { %><%= order.delivery %>
+                  <% } %>
+                  <% if (order.deliveryCost > 0) { %>(<%= Number(order.deliveryCost).toFixed(2) %> PLN)<% } %>
+                </p>
+              <% } %>
+              
+              <p><span class="text-slate-500 dark:text-slate-500">Płatność:</span> 
+                <% if (order.paymentMethod === 'card') { %>
+                  Karta płatnicza
+                  <% if (order.paymentDetails && order.paymentDetails.lastFourDigits) { %>
+                    (****<%= order.paymentDetails.lastFourDigits %>)
+                  <% } %>
+                <% } else if (order.paymentMethod === 'blik') { %>
+                  BLIK
+                <% } else if (order.paymentMethod === 'cash') { %>
+                  Gotówka przy odbiorze
+                <% } else if (order.payment) { %>
+                  <%= order.payment === 'card' ? 'Karta' : order.payment === 'transfer' ? 'Przelew' : order.payment %>
+                <% } else { %>
+                  Brak danych
+                <% } %>
+              </p>
+            </div>
+
+          <div class="flex flex-wrap gap-3" data-order-actions>
+              <% if (order.status === 'pending' && order.cancelDeadline && new Date(order.cancelDeadline) > new Date()) { %>
+                <form method="POST" action="/orders/cancel/<%= order._id %>" data-cancel-form>
+                  <button
+                    type="submit"
+                    class="rounded-full border border-amber-500/40 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-amber-600 hover:bg-amber-50 dark:border-amber-400/40 dark:text-amber-400 dark:hover:bg-amber-400/10"
+                  >
+                    Anuluj (<span data-timer="<%= order._id %>"></span>s)
+                  </button>
+                </form>
+              <% } %>
+              <form method="POST" action="/orders/delete/<%= order._id %>" class="order-action-form">
+                <button
+                  type="submit"
+                  class="rounded-full border border-slate-300 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  Usuń
+                </button>
+              </form>
+              <span
+                data-status-badge
+                class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide
+                  <%= order.status === 'pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300' : 
+                      order.status === 'cancelled' ? 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300' : 
+                      'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300' %>"
+              >
+                <%= order.status === 'pending' ? 'Oczekuje' : order.status === 'cancelled' ? 'Anulowane' : 'Potwierdzone' %>
+              </span>
+            </div>
+          </div>
+        </article>
+      <% }) %>
+    </section>
+  <% } %>
+</main>
+
+<%- include('partials/layoutEnd', { extraScripts: ['/js/orders.js'] }) %>

@@ -1,0 +1,104 @@
+<%- include('partials/layoutStart', {
+  pageTitle: 'Koszyk',
+  metaDescription: 'Zobacz produkty dodane do koszyka i przejdź do checkoutu.',
+  showSearch: true,
+  bodyClass: 'min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50',
+  wrapperClass: 'min-h-screen'
+}) %>
+
+<main class="mx-auto max-w-6xl px-4 pt-10">
+  <header class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.35em] text-brand">Podsumowanie</p>
+      <h1 class="font-display text-3xl text-slate-900 dark:text-white">Twój koszyk</h1>
+    </div>
+    <a href="/" class="text-sm text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Kontynuuj zakupy →</a>
+  </header>
+
+  <% if (items.length === 0) { %>
+    <section class="mt-10 glass-panel p-10 text-center text-slate-900 dark:text-slate-200">
+      <p class="text-lg font-semibold">Koszyk jest pusty.</p>
+      <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Dodaj kilka tytułów z katalogu, aby przetestować cały checkout.</p>
+      <a
+        href="/"
+        class="mt-6 inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark"
+      >
+        Wróć do sklepu
+      </a>
+    </section>
+  <% } else { %>
+    <section class="mt-10 grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
+      <div class="space-y-4">
+        <% items.forEach((item) => { %>
+          <article class="glass-panel grid gap-4 p-6 text-slate-900 dark:text-slate-100 sm:grid-cols-[auto,1fr,auto] sm:items-center">
+            <div class="flex flex-col gap-2">
+              <p class="text-xs uppercase tracking-[0.35em] text-brand"><%= item.author || 'Nieznany autor' %></p>
+              <h2 class="font-display text-xl"><%= item.title %></h2>
+              <p class="text-sm text-slate-500 dark:text-slate-300">ID: <%= item.bookId %></p>
+            </div>
+
+            <div class="flex flex-col gap-2 text-sm text-slate-500 dark:text-slate-300 sm:flex-row sm:items-center sm:justify-end">
+              <span>Ilość: <strong class="text-slate-900 dark:text-slate-100"><%= item.quantity %></strong></span>
+              <span>Cena szt.: <strong class="text-slate-900 dark:text-slate-100"><%= Number(item.price).toFixed(2) %> PLN</strong></span>
+              <span class="text-lg font-semibold text-slate-900 dark:text-white">
+                <%= Number(item.price * item.quantity).toFixed(2) %> PLN
+              </span>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <form class="cart-action" data-endpoint="/cart/increase" method="POST" action="/cart/increase">
+                <input type="hidden" name="bookId" value="<%= item.bookId %>" />
+                <button type="submit" class="rounded-full px-3 py-2 text-sm font-semibold transition bg-slate-900 text-white hover:bg-slate-800 dark:bg-white/10 dark:text-white dark:hover:bg-white/20">
+                  +
+                </button>
+              </form>
+              <form class="cart-action" data-endpoint="/cart/decrease" method="POST" action="/cart/decrease">
+                <input type="hidden" name="bookId" value="<%= item.bookId %>" />
+                <button type="submit" class="rounded-full px-3 py-2 text-sm font-semibold transition bg-slate-900 text-white hover:bg-slate-800 dark:bg-white/10 dark:text-white dark:hover:bg-white/20">
+                  −
+                </button>
+              </form>
+              <form class="cart-action" data-endpoint="/cart/remove" method="POST" action="/cart/remove">
+                <input type="hidden" name="bookId" value="<%= item.bookId %>" />
+                <button type="submit" class="rounded-full px-3 py-2 text-sm font-semibold transition bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-500/20 dark:text-rose-200 dark:hover:bg-rose-500/40">
+                  Usuń
+                </button>
+              </form>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+
+      <aside class="glass-panel flex flex-col gap-6 p-8 text-slate-900 dark:text-slate-50">
+        <div>
+          <p class="text-xs uppercase tracking-[0.35em] text-brand">Podsumowanie</p>
+          <h2 class="text-2xl font-semibold text-slate-900 dark:text-white">Łącznie: <%= Number(total).toFixed(2) %> PLN</h2>
+        </div>
+
+        <div class="rounded-3xl p-4 text-sm bg-slate-100 text-slate-700 dark:bg-white/5 dark:text-slate-300">
+          <% const itemCount = items.reduce((sum, item) => sum + item.quantity, 0); %>
+          <p>Produkty w koszyku: <strong><%= itemCount %></strong></p>
+          <% if (itemCount > 3) { %>
+            <p class="mt-2 text-emerald-700 dark:text-emerald-300">Rabat 7.5% aktywny — pokaż klientowi benefity wolumenu.</p>
+          <% } else { %>
+            <p class="mt-2">Dodaj jeszcze <%= 4 - itemCount %> szt., aby aktywować rabat wolumenowy.</p>
+          <% } %>
+        </div>
+
+        <a
+          href="/order"
+          class="inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark"
+        >
+          Przejdź do checkoutu
+        </a>
+        <form action="/cart/clear" method="POST" class="cart-action" data-endpoint="/cart/clear">
+          <button type="submit" class="w-full rounded-full border px-4 py-2 text-sm font-semibold transition border-slate-300 text-slate-700 hover:border-slate-500 dark:border-white/10 dark:text-white dark:hover:bg-white/10">
+            Wyczyść koszyk
+          </button>
+        </form>
+      </aside>
+    </section>
+  <% } %>
+</main>
+
+<%- include('partials/layoutEnd', { extraScripts: ['/js/cart.js'] }) %>

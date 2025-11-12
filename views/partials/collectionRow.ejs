@@ -1,0 +1,25 @@
+<% if (books && books.length) { %>
+  <article class="space-y-4">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-[0.35em] text-brand"><%= eyebrow %></p>
+        <h3 class="text-2xl font-semibold text-white"><%= title %></h3>
+      </div>
+      <% if (ctaCategory) { %>
+        <a
+          href="/?category=<%= encodeURIComponent(ctaCategory) %>"
+          class="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:border-brand hover:text-brand"
+        >
+          Przeglądaj kategorię
+          <span aria-hidden="true">→</span>
+        </a>
+      <% } %>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <% (books || []).slice(0, 4).forEach((book) => { %>
+        <%- include('./bookCard', { book }) %>
+      <% }) %>
+    </div>
+  </article>
+<% } %>

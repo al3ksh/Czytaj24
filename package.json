@@ -1,0 +1,43 @@
+{
+  "name": "czytaj24",
+  "version": "1.0.0",
+  "description": "Czytaj24 is an e-commerce bookstore built with Node.js/Express and MongoDB, featuring smooth AJAX search, cart and orders, auth with profiles, an admin panel, and a responsive EJS + Tailwind UI.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "seed": "node seeders/index.js seed",
+    "seed:all": "node seeders/index.js seed",
+    "seed:books": "node seeders/index.js books",
+    "seed:users": "node seeders/index.js users",
+    "wipe:books": "node seeders/index.js wipe:books",
+    "wipe:all": "node seeders/index.js wipe",
+    "make-admin": "node seeders/index.js make-admin",
+    "dev:css": "tailwindcss -i ./src/styles/tailwind.css -o ./public/css/tailwind.css --watch",
+    "build:css": "tailwindcss -i ./src/styles/tailwind.css -o ./public/css/tailwind.css --minify",
+    "postinstall": "npm run build:css",
+  "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "compression": "^1.8.1",
+    "connect-mongo": "^5.1.0",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "express-rate-limit": "^8.2.1",
+    "express-session": "^1.18.0",
+    "helmet": "^8.1.0",
+    "mongodb": "^6.12.0",
+    "mysql2": "^3.11.2"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
+    "@tailwindcss/forms": "^0.5.10",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.14"
+  }
+}

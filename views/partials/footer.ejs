@@ -1,0 +1,66 @@
+<footer class="mt-8 sm:mt-16 border-t border-slate-200 bg-white/70 text-slate-700 backdrop-blur dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300">
+  <div class="mx-auto max-w-7xl px-4 py-6 sm:py-10">
+  <div class="grid grid-cols-2 gap-4 sm:gap-8 sm:grid-cols-4">
+  <div class="col-span-2 sm:col-span-1">
+        <h3 class="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100">Czytaj24</h3>
+        <p class="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+          Księgarnia premium. Nowości, bestsellery i szybka dostawa.
+        </p>
+      </div>
+
+  <div class="col-span-1">
+        <h4 class="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100">Sklep</h4>
+        <ul class="mt-2 space-y-2 text-xs sm:text-sm">
+          <li><a href="/" class="hover:text-slate-900 dark:hover:text-white">Strona główna</a></li>
+          <li><a href="/cart" class="hover:text-slate-900 dark:hover:text-white">Koszyk</a></li>
+          <li><a href="/orders" class="hover:text-slate-900 dark:hover:text-white">Zamówienia</a></li>
+        </ul>
+      </div>
+
+  <div class="col-span-1">
+        <h4 class="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100">Konto</h4>
+        <ul class="mt-2 space-y-2 text-xs sm:text-sm">
+          <% if (typeof userName !== 'undefined' && userName) { %>
+            <li><a href="/profil" class="hover:text-slate-900 dark:hover:text-white">Profil</a></li>
+            <li><a href="/orders" class="hover:text-slate-900 dark:hover:text-white">Zamówienia</a></li>
+            <% if (typeof userRole !== 'undefined' && userRole === 'admin') { %>
+              <li><a href="/admin" class="hover:text-slate-900 dark:hover:text-white">Panel admina</a></li>
+            <% } %>
+            <li>
+              <form method="POST" action="/logout">
+                <button type="submit" class="hover:text-rose-600 dark:hover:text-rose-400">Wyloguj</button>
+              </form>
+            </li>
+          <% } else { %>
+            <li><a href="/login" class="hover:text-slate-900 dark:hover:text-white">Zaloguj się</a></li>
+            <li><a href="/register" class="hover:text-slate-900 dark:hover:text-white">Zarejestruj</a></li>
+          <% } %>
+        </ul>
+      </div>
+
+  <div class="col-span-2 sm:col-span-1">
+        <h4 class="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100">Kontakt</h4>
+        <ul class="mt-2 space-y-2 text-xs sm:text-sm">
+          <li><a href="mailto:kontakt@czytaj24.pl" class="hover:text-slate-900 dark:hover:text-white">kontakt@czytaj24.pl</a></li>
+          <li><a href="/about" class="hover:text-slate-900 dark:hover:text-white">O nas</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-6 sm:mt-8 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-4 sm:pt-6 text-[10px] sm:text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400 sm:flex-row">
+      <p>© <span id="year"></span> Czytaj24. Wszelkie prawa zastrzeżone.</p>
+      <div class="flex items-center gap-4">
+        <a href="/privacy" class="hover:text-slate-900 dark:hover:text-white">Polityka prywatności</a>
+        <span aria-hidden="true">•</span>
+        <a href="/terms" class="hover:text-slate-900 dark:hover:text-white">Regulamin</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      const y = new Date().getFullYear();
+      const el = document.getElementById('year');
+      if (el) el.textContent = y;
+    })();
+  </script>
+</footer>

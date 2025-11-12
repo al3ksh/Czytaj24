@@ -1,0 +1,115 @@
+<%- include('../partials/layoutStart', {
+  pageTitle: 'Książki - Admin',
+  metaDescription: 'Zarządzanie książkami w księgarni Czytaj24',
+  showSearch: false,
+  bodyClass: 'min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50',
+  wrapperClass: 'min-h-screen',
+  userName
+}) %>
+
+<main class="mx-auto max-w-7xl px-4 py-10">
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.4em] text-brand">Admin Panel</p>
+      <h1 class="font-display text-3xl text-slate-900 dark:text-white">Zarządzanie książkami</h1>
+    </div>
+    <div class="flex gap-3">
+      <a href="/admin" class="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">← Dashboard</a>
+      <a href="/admin/books/new" class="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white shadow shadow-orange-500/40 hover:bg-brand-dark">
+        + Dodaj książkę
+      </a>
+    </div>
+  </div>
+
+  <div class="glass-panel overflow-hidden">
+    <% if (books.length === 0) { %>
+      <div class="p-10 text-center">
+        <p class="text-lg font-semibold text-slate-900 dark:text-white">Brak książek w bazie</p>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Dodaj pierwszą książkę, aby rozpocząć zarządzanie katalogiem.</p>
+        <a href="/admin/books/new" class="mt-6 inline-block rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-brand-dark">
+          Dodaj książkę
+        </a>
+      </div>
+    <% } else { %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="border-b border-slate-200 bg-slate-100/50 dark:border-slate-700 dark:bg-slate-800/50">
+            <tr class="text-left">
+              <th class="px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Tytuł</th>
+              <th class="px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Autor</th>
+              <th class="px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Kategoria</th>
+              <th class="px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Cena</th>
+              <th class="px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Stan</th>
+              <th class="px-4 py-3 font-semibold text-slate-700 dark:text-slate-300">Akcje</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+            <% books.forEach(book => { %>
+              <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/50">
+                <td class="px-4 py-4">
+                  <p class="font-medium text-slate-900 dark:text-white"><%= book.title %></p>
+                  <% if (book.discountPercent) { %>
+                    <span class="mt-1 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">
+                      -<%= book.discountPercent %>%
+                    </span>
+                  <% } %>
+                </td>
+                <td class="px-4 py-4 text-slate-600 dark:text-slate-400"><%= book.author %></td>
+                <td class="px-4 py-4 text-slate-600 dark:text-slate-400"><%= book.category || 'Inne' %></td>
+                <td class="px-4 py-4">
+                  <p class="font-semibold text-slate-900 dark:text-white"><%= Number(book.price).toFixed(2) %> PLN</p>
+                  <% if (book.discountedPrice) { %>
+                    <p class="text-xs text-slate-500 dark:text-slate-400"><%= Number(book.discountedPrice).toFixed(2) %> PLN po rabacie</p>
+                  <% } %>
+                </td>
+                <td class="px-4 py-4">
+                  <span class="font-semibold <%= book.stock < 5 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white' %>">
+                    <%= book.stock %> szt.
+                  </span>
+                  <% if (book.stock < 5) { %>
+                    <p class="text-xs text-rose-600 dark:text-rose-400">Niski stan!</p>
+                  <% } %>
+                </td>
+                <td class="px-4 py-4">
+                  <div class="flex gap-2">
+                    <a href="/admin/books/<%= book._id %>/edit" class="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700">
+                      Edytuj
+                    </a>
+                    <form action="/admin/books/<%= book._id %>/delete" method="POST" class="delete-book-form" data-title="<%- book.title %>">
+                      <button type="submit" class="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700">
+                        Usuń
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <div class="border-t border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400">
+        Łącznie: <strong><%= books.length %></strong> książek
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/layoutEnd', { extraScripts: ['/js/admin.js'] }) %>
+
+
+<div id="confirmDeleteModal" style="position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 1rem;">
+  <div id="confirmDeleteBackdrop" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);"></div>
+  <div style="position: relative; width: 100%; max-width: 30rem; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);" class="bg-white dark:bg-slate-900">
+    <div class="mb-3 flex items-start gap-3">
+      <div class="mt-0.5 rounded-full bg-rose-100 p-2 text-rose-600 dark:bg-rose-500/20 dark:text-rose-300">✕</div>
+      <div>
+        <h3 class="text-base font-semibold text-slate-900 dark:text-slate-50">Usunąć książkę?</h3>
+        <p id="confirmDeleteTitle" class="mt-1 text-sm text-slate-600 dark:text-slate-300">Potwierdź usunięcie pozycji.</p>
+      </div>
+    </div>
+    <div class="mt-5 flex justify-end gap-3">
+      <button id="confirmDeleteCancel" class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-800">Anuluj</button>
+      <button id="confirmDeleteOk" class="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700">Usuń</button>
+    </div>
+  </div>
+</div>

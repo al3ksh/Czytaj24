@@ -1,0 +1,233 @@
+<%- include('partials/layoutStart', {
+  pageTitle: 'Sklep',
+  metaDescription: 'Nowoczesny sklep z książkami: hero, sekcje custom, filtrowanie i pełny ecommerce flow.',
+  filters,
+  showSearch: true,
+  bodyClass: null,
+  wrapperClass: null
+}) %>
+
+<main class="mx-auto flex max-w-6xl flex-col gap-10 px-4 pt-10">
+  
+  <section class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+    <article class="glass-panel p-10 text-slate-900 dark:text-slate-50">
+      <p class="text-xs uppercase tracking-[0.4em] text-brand">Nowa era czytania</p>
+      <h1 class="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+        Zaprojektuj doświadczenie zakupowe, które pokochają Twoi klienci.
+      </h1>
+      <p class="mt-4 text-lg text-slate-500 dark:text-slate-300">
+        Pełny flow e-commerce: od inspirującej półki głównej, przez inteligentne filtrowanie, po dopracowany checkout i panel admina.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a
+          href="#kolekcje"
+          class="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+        >
+          Zobacz sekcje
+        </a>
+        <a
+          href="/orders"
+          class="rounded-full border border-slate-200/70 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-400 dark:border-slate-700 dark:text-white"
+        >
+          Historia zamówień
+        </a>
+      </div>
+      <ul class="mt-8 grid gap-4 text-sm text-slate-600 dark:text-slate-300 sm:grid-cols-2">
+        <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
+          <span class="text-2xl">✨</span>
+          Dark / Light mode na zmiennych CSS
+        </li>
+        <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
+          <span class="text-2xl">⚡</span>
+          Micro-interakcje + skeletony
+        </li>
+        <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
+          <span class="text-2xl">🛡️</span>
+          Bezpieczne sesje + rate limiting
+        </li>
+        <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
+          <span class="text-2xl">🛒</span>
+          Dodawanie do koszyka bez przeładowań
+        </li>
+      </ul>
+    </article>
+
+    <aside class="grid gap-4">
+      <div class="glass-panel p-6 text-slate-900 dark:text-slate-100">
+        <p class="text-xs uppercase tracking-[0.35em] text-slate-500">KPI e-commerce</p>
+        <div class="mt-6 space-y-4">
+          <div>
+            <p class="text-3xl font-semibold">1.2s</p>
+            <p class="text-sm text-slate-500">Czas do pierwszej treści</p>
+          </div>
+          <div>
+            <p class="text-3xl font-semibold">+38%</p>
+            <p class="text-sm text-slate-500">Wyższa konwersja mobile</p>
+          </div>
+        </div>
+      </div>
+      <div class="glass-panel flex flex-col gap-4 p-6 text-slate-900 dark:text-white">
+        <p class="text-xs uppercase tracking-[0.35em] text-slate-500">Flow portfolio</p>
+        <div class="space-y-3 text-sm text-slate-500 dark:text-slate-300">
+          <p>1. Przeglądanie / hero</p>
+          <p>2. Filtry + sortowanie</p>
+          <p>3. Koszyk i checkout</p>
+          <p>4. Panel admina (CRUD + statystyki)</p>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  
+  <section class="glass-panel" id="filtry">
+    <div class="flex flex-col gap-3 border-b border-white/10 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-[0.4em] text-brand">Smart Filters</p>
+        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Zawęź katalog</h2>
+      </div>
+      <div class="text-sm text-slate-500 dark:text-slate-300">
+        <p>Kategoria: <strong><%= filters.category || 'wszystkie' %></strong></p>
+        <% if (filters.minPrice || filters.maxPrice) { %>
+          <p>Cena: <strong><%= filters.minPrice || 0 %> - <%= filters.maxPrice || '∞' %> PLN</strong></p>
+        <% } %>
+      </div>
+      <button
+        id="clear-filters"
+        type="button"
+        class="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-500 dark:border-slate-700 dark:text-slate-300"
+      >
+        Wyczyść
+      </button>
+    </div>
+
+    <form method="GET" action="/" id="filter-form" class="grid gap-6 px-6 py-6 md:grid-cols-2 lg:grid-cols-4">
+      <input type="hidden" name="search" value="<%= filters.search %>" />
+      <div>
+        <label for="category" class="text-xs uppercase tracking-[0.3em] text-slate-500">Kategoria</label>
+        <select
+          id="category"
+          name="category"
+          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand focus:ring-brand dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        >
+          <option value="" <%= !filters.category ? 'selected' : '' %>>Wszystkie</option>
+          <% categories.forEach((category) => { %>
+            <option value="<%= category %>" <%= filters.category === category ? 'selected' : '' %>>
+              <%= category %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div>
+        <label for="language" class="text-xs uppercase tracking-[0.3em] text-slate-500">Język</label>
+        <select
+          id="language"
+          name="language"
+          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand focus:ring-brand dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        >
+          <option value="" <%= !filters.language ? 'selected' : '' %>>Wszystkie</option>
+          <% languages.forEach((language) => { %>
+            <option value="<%= language %>" <%= filters.language === language ? 'selected' : '' %>>
+              <%= language %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div>
+        <label class="text-xs uppercase tracking-[0.3em] text-slate-500">Cena (PLN)</label>
+        <div class="mt-2 flex gap-3">
+          <input
+            type="number"
+            id="minPrice"
+            name="minPrice"
+            value="<%= filters.minPrice %>"
+            placeholder="od"
+            class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700 focus:border-brand focus:ring-brand dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+            min="0"
+            step="0.01"
+          />
+          <input
+            type="number"
+            id="maxPrice"
+            name="maxPrice"
+            value="<%= filters.maxPrice %>"
+            placeholder="do"
+            class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700 focus:border-brand focus:ring-brand dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+            min="0"
+            step="0.01"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label for="sortBy" class="text-xs uppercase tracking-[0.3em] text-slate-500">Sortowanie</label>
+        <select
+          id="sortBy"
+          name="sortBy"
+          class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand focus:ring-brand dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        >
+          <option value="newest" <%= filters.sortBy === 'newest' ? 'selected' : '' %>>Najnowsze</option>
+          <option value="price-asc" <%= filters.sortBy === 'price-asc' ? 'selected' : '' %>>Cena rosnąco</option>
+          <option value="price-desc" <%= filters.sortBy === 'price-desc' ? 'selected' : '' %>>Cena malejąco</option>
+          <option value="popular" <%= filters.sortBy === 'popular' ? 'selected' : '' %>>Popularność</option>
+        </select>
+      </div>
+
+      <div class="md:col-span-2 lg:col-span-4">
+        <button
+          type="submit"
+          class="w-full rounded-2xl bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark"
+        >
+          Zastosuj filtry
+        </button>
+      </div>
+    </form>
+  </section>
+
+  
+  <section class="space-y-6" id="listing">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-brand">Katalog</p>
+        <h2 class="text-2xl font-semibold text-white">Wyniki</h2>
+      </div>
+      <p class="text-sm text-slate-400">
+        Wyszukiwanie w czasie rzeczywistym
+      </p>
+    </div>
+
+    
+    <div id="search-loading" style="display: none;" class="text-center py-4">
+      <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-brand border-r-transparent"></div>
+      <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Wyszukiwanie...</p>
+    </div>
+
+    
+    <div id="search-results-container" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <% if (books.length > 0) { %>
+        <% books.forEach((book) => { %>
+          <%- include('partials/bookCard', { book }) %>
+        <% }) %>
+      <% } else { %>
+        <div class="col-span-full glass-panel p-8 text-center text-slate-900 dark:text-slate-100">
+          <p class="text-lg font-semibold">Brak wyników dla wybranych filtrów</p>
+          <p class="mt-2 text-sm text-slate-500 dark:text-slate-300">Spróbuj zmienić zakres cenowy lub kategorię.</p>
+        </div>
+      <% } %>
+    </div>
+
+    
+    <div id="pagination-container"></div>
+  </section>
+
+  
+  <section class="space-y-12" id="kolekcje">
+    <%- include('partials/collectionRow', { title: 'Nowości na półkach', eyebrow: 'Nowości', books: collections?.newArrivals || [], ctaCategory: 'Edukacja' }) %>
+    <%- include('partials/collectionRow', { title: 'Bestsellery społeczności', eyebrow: 'Popularne', books: collections?.topRated || [], ctaCategory: 'Przygodowe' }) %>
+    <%- include('partials/collectionRow', { title: 'Sezonowe promocje', eyebrow: 'Promocje', books: collections?.promoPicks || [], ctaCategory: '' }) %>
+    <%- include('partials/collectionRow', { title: 'Ostatnie sztuki', eyebrow: 'Low stock', books: collections?.lowStock || [], ctaCategory: '' }) %>
+  </section>
+</main>
+
+<%- include('partials/layoutEnd', { extraScripts: ['/js/search.js'] }) %>

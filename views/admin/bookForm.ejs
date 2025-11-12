@@ -1,0 +1,180 @@
+<%- include('../partials/layoutStart', {
+  pageTitle: book ? 'Edytuj książkę' : 'Nowa książka',
+  metaDescription: 'Formularz zarządzania książką',
+  showSearch: false,
+  bodyClass: 'min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50',
+  wrapperClass: 'min-h-screen',
+  userName
+}) %>
+
+<main class="mx-auto max-w-4xl px-4 py-10">
+  <div class="mb-8">
+    <a href="/admin/books" class="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+      <span aria-hidden="true">←</span> Wróć do listy
+    </a>
+    <p class="mt-4 text-xs uppercase tracking-[0.4em] text-brand">Admin Panel</p>
+    <h1 class="font-display text-3xl text-slate-900 dark:text-white">
+      <%= book ? 'Edytuj książkę' : 'Dodaj nową książkę' %>
+    </h1>
+  </div>
+
+  <div class="glass-panel p-8">
+    <form action="<%= book ? `/admin/books/${book._id}` : '/admin/books' %>" method="POST" class="space-y-6">
+      <div class="grid gap-6 md:grid-cols-2">
+        <div>
+          <label for="title" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+            Tytuł <span class="text-rose-500">*</span>
+          </label>
+          <input
+            id="title"
+            type="text"
+            name="title"
+            value="<%= values.title || '' %>"
+            class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            required
+          />
+          <% if (errors.title) { %>
+            <p class="mt-2 text-xs font-medium text-rose-600 dark:text-rose-200"><%= errors.title %></p>
+          <% } %>
+        </div>
+
+        <div>
+          <label for="author" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+            Autor <span class="text-rose-500">*</span>
+          </label>
+          <input
+            id="author"
+            type="text"
+            name="author"
+            value="<%= values.author || '' %>"
+            class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            required
+          />
+          <% if (errors.author) { %>
+            <p class="mt-2 text-xs font-medium text-rose-600 dark:text-rose-200"><%= errors.author %></p>
+          <% } %>
+        </div>
+
+        <div>
+          <label for="price" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+            Cena (PLN) <span class="text-rose-500">*</span>
+          </label>
+          <input
+            id="price"
+            type="number"
+            name="price"
+            value="<%= values.price || '' %>"
+            step="0.01"
+            min="0"
+            class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            required
+          />
+          <% if (errors.price) { %>
+            <p class="mt-2 text-xs font-medium text-rose-600 dark:text-rose-200"><%= errors.price %></p>
+          <% } %>
+        </div>
+
+        <div>
+          <label for="stock" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+            Stan magazynowy <span class="text-rose-500">*</span>
+          </label>
+          <input
+            id="stock"
+            type="number"
+            name="stock"
+            value="<%= values.stock || '' %>"
+            min="0"
+            class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            required
+          />
+          <% if (errors.stock) { %>
+            <p class="mt-2 text-xs font-medium text-rose-600 dark:text-rose-200"><%= errors.stock %></p>
+          <% } %>
+        </div>
+
+        <div>
+          <label for="category" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+            Kategoria
+          </label>
+          <select
+            id="category"
+            name="category"
+            class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+          >
+            <option value="Edukacja" <%= values.category === 'Edukacja' ? 'selected' : '' %>>Edukacja</option>
+            <option value="Przygodowe" <%= values.category === 'Przygodowe' ? 'selected' : '' %>>Przygodowe</option>
+            <option value="Fantastyka" <%= values.category === 'Fantastyka' ? 'selected' : '' %>>Fantastyka</option>
+            <option value="Thriller" <%= values.category === 'Thriller' ? 'selected' : '' %>>Thriller</option>
+            <option value="Romans" <%= values.category === 'Romans' ? 'selected' : '' %>>Romans</option>
+            <option value="Biografie" <%= values.category === 'Biografie' ? 'selected' : '' %>>Biografie</option>
+            <option value="Inne" <%= values.category === 'Inne' || !values.category ? 'selected' : '' %>>Inne</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="language" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+            Język
+          </label>
+          <select
+            id="language"
+            name="language"
+            class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+          >
+            <option value="polski" <%= values.language === 'polski' || !values.language ? 'selected' : '' %>>Polski</option>
+            <option value="angielski" <%= values.language === 'angielski' ? 'selected' : '' %>>Angielski</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="discountPercent" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+            Rabat (%)
+          </label>
+          <input
+            id="discountPercent"
+            type="number"
+            name="discountPercent"
+            value="<%= values.discountPercent || '' %>"
+            min="0"
+            max="100"
+            class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label for="description" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
+          Opis
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          rows="4"
+          class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+        ><%= values.description || '' %></textarea>
+      </div>
+
+      <% if (errors.general) { %>
+        <div class="rounded-2xl border border-rose-300/40 bg-rose-50 px-4 py-3 text-sm text-rose-600 dark:border-rose-500/40 dark:bg-rose-500/20 dark:text-rose-200">
+          <p><%= errors.general %></p>
+        </div>
+      <% } %>
+
+      <div class="flex gap-3">
+        <button
+          type="submit"
+          class="flex-1 rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+        >
+          <%= book ? 'Zaktualizuj' : 'Dodaj książkę' %>
+        </button>
+        <a
+          href="/admin/books"
+          class="flex-1 rounded-full border border-slate-300 px-6 py-3 text-center text-sm font-semibold uppercase tracking-wide text-slate-700 transition hover:border-slate-500 dark:border-slate-600 dark:text-slate-300"
+        >
+          Anuluj
+        </a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<%- include('../partials/layoutEnd') %>

@@ -1,0 +1,39 @@
+<% const resolvedTitle = pageTitle ? `${pageTitle} | Czytaj24` : 'Czytaj24 | Księgarnia premium'; %>
+<% const resolvedDescription = metaDescription || 'Nowoczesny sklep z książkami: hero sekcje, filtry, checkout i panel klienta.'; %>
+<!DOCTYPE html>
+<html lang="pl" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= resolvedTitle %></title>
+    <meta name="description" content="<%= resolvedDescription %>" />
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/tailwind.css" />
+    <script>
+      (function () {
+        const storageKey = 'czytaj24-theme';
+        const saved = window.localStorage.getItem(storageKey);
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        const root = document.documentElement;
+        root.dataset.theme = theme;
+        if (theme === 'dark') {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
+        }
+      })();
+    </script>
+  </head>
+  <% const layoutFilters = (typeof filters !== 'undefined' && filters) ? filters : {}; %>
+  <% const safeBodyClass = (typeof bodyClass !== 'undefined') ? bodyClass : 'bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-slate-50'; %>
+  <% const safeWrapperClass = (typeof wrapperClass !== 'undefined') ? wrapperClass : 'min-h-screen flex flex-col bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.2),_transparent_55%)]'; %>
+  <body class="<%= safeBodyClass %>">
+    <div class="<%= safeWrapperClass %>">
+      <%- include('./navbar', { showSearch: typeof showSearch === 'boolean' ? showSearch : true, filters: layoutFilters, userName: typeof userName !== 'undefined' ? userName : null }) %>
