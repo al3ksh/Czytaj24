@@ -115,11 +115,8 @@
     suggestions.innerHTML = items
       .map(
         (item) => `
-        <button
-          type="button"
-          data-search-item
-          data-book-id="${item._id}"
-          data-title="${item.title}"
+        <a
+          href="/book/${item._id}"
           class="flex w-full items-center justify-between rounded-xl px-4 py-2 text-left text-slate-900 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-white/5"
         >
           <span>
@@ -127,7 +124,7 @@
             <span class="ml-1 text-xs text-slate-500 dark:text-slate-400">(${item.author || 'Autor nieznany'})</span>
           </span>
           <span class="text-xs text-slate-500 dark:text-slate-400">${Number(item.price || 0).toFixed(2)} PLN</span>
-        </button>
+        </a>
       `
       )
       .join('');
@@ -161,12 +158,5 @@
 
   searchInput?.addEventListener('blur', () => {
     setTimeout(() => renderSuggestions([]), 200);
-  });
-
-  suggestions?.addEventListener('mousedown', (event) => {
-    const button = event.target.closest('[data-search-item]');
-    if (!button) return;
-    searchInput.value = button.dataset.title || '';
-    suggestions.classList.add('hidden');
   });
 })();
