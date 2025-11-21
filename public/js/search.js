@@ -84,7 +84,7 @@
       const hasDiscount = book.discountedPrice && book.discountedPrice < book.price;
       
       return `
-        <div class="glass-panel flex flex-col gap-4 p-6">
+        <div class="glass-panel flex flex-col gap-4 p-6 text-slate-900 dark:text-slate-100">
           <div class="flex items-start justify-between">
             <span class="badge bg-brand-muted/60 text-brand-dark dark:text-amber-200 text-xs tracking-wide">
               ${book.category || 'Literatura'}
@@ -99,7 +99,7 @@
           </div>
 
           <div>
-            <h3 class="font-display text-lg text-slate-900 dark:text-white">${book.title}</h3>
+            <h3 class="font-display text-lg font-bold text-slate-900 dark:text-white">${book.title}</h3>
             <p class="text-sm text-slate-500 dark:text-slate-400">by ${book.author}</p>
           </div>
 
