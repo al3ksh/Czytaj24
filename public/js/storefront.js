@@ -4,6 +4,14 @@
   const themeToggleMobile = document.querySelector('[data-theme-toggle-mobile]');
   const storageKey = 'czytaj24-theme';
 
+  const updateToggleState = (toggle, theme) => {
+    if (!toggle) return;
+    const isDark = theme === 'dark';
+    toggle.textContent = isDark ? 'Tryb jasny' : 'Tryb ciemny';
+    toggle.setAttribute('aria-pressed', String(isDark));
+    toggle.setAttribute('aria-label', isDark ? 'Włącz tryb jasny' : 'Włącz tryb ciemny');
+  };
+
   const applyTheme = (theme) => {
     root.dataset.theme = theme;
     if (theme === 'dark') {
@@ -12,12 +20,8 @@
       root.classList.remove('dark');
     }
     localStorage.setItem(storageKey, theme);
-    if (themeToggle) {
-      themeToggle.textContent = theme === 'dark' ? 'Tryb jasny' : 'Tryb ciemny';
-    }
-    if (themeToggleMobile) {
-      themeToggleMobile.textContent = theme === 'dark' ? 'Tryb jasny' : 'Tryb ciemny';
-    }
+    updateToggleState(themeToggle, theme);
+    updateToggleState(themeToggleMobile, theme);
   };
 
   applyTheme(root.dataset.theme || localStorage.getItem(storageKey) || 'light');

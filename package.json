@@ -15,7 +15,7 @@
     "dev:css": "tailwindcss -i ./src/styles/tailwind.css -o ./public/css/tailwind.css --watch",
     "build:css": "tailwindcss -i ./src/styles/tailwind.css -o ./public/css/tailwind.css --minify",
     "postinstall": "npm run build:css",
-  "test": "echo \"No tests yet\" && exit 0"
+    "test": "echo \"No tests yet\" && exit 0"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +31,7 @@
     "express-session": "^1.18.0",
     "helmet": "^8.1.0",
     "mongodb": "^6.12.0",
+    "multer": "^2.0.2",
     "mysql2": "^3.11.2"
   },
   "devDependencies": {

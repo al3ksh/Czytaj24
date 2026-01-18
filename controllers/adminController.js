@@ -90,6 +90,14 @@ exports.getBookForm = async (req, res) => {
   }
 };
 
+const resolveCoverUrl = (req) => {
+  if (req.file && req.file.filename) {
+    return `/uploads/books/${req.file.filename}`;
+  }
+  const coverUrl = (req.body.coverUrl || '').trim();
+  return coverUrl || '';
+};
+
 exports.createBook = async (req, res) => {
   try {
     const { title, author, price, stock, category, language, description, discountPercent } = req.body;
@@ -111,6 +119,7 @@ exports.createBook = async (req, res) => {
     }
 
     const db = await connectToDatabase();
+    const coverUrl = resolveCoverUrl(req);
     const bookData = {
       title: title.trim(),
       author: author.trim(),
@@ -119,9 +128,12 @@ exports.createBook = async (req, res) => {
       category: category || 'Inne',
       language: language || 'polski',
       description: description || '',
+      coverUrl,
       discountPercent: discountPercent ? Number(discountPercent) : 0,
       discountedPrice: discountPercent ? Number(price) * (1 - Number(discountPercent) / 100) : null,
-      aggregatedRating: 4.5,
+      aggregatedRating: null,
+      ratingCount: 0,
+      ratingTotal: 0,
       tags: [],
       createdAt: new Date()
     };
@@ -151,9 +163,17 @@ exports.updateBook = async (req, res) => {
     if (!price || isNaN(price) || Number(price) <= 0) errors.price = 'Cena musi być liczbą większą od 0';
     if (stock === undefined || isNaN(stock) || Number(stock) < 0) errors.stock = 'Stan musi być liczbą nieujemną';
 
+    const db = await connectToDatabase();
+    const book = await db.collection('books').findOne({ _id: new ObjectId(id) });
+
+    if (!book) {
+      return res.status(404).render('error', {
+        message: 'Książka nie znaleziona',
+        statusCode: 404
+      });
+    }
+
     if (Object.keys(errors).length > 0) {
-      const db = await connectToDatabase();
-      const book = await db.collection('books').findOne({ _id: new ObjectId(id) });
       
       return res.status(400).render('admin/bookForm', {
         userName: req.session.userName,
@@ -163,7 +183,7 @@ exports.updateBook = async (req, res) => {
       });
     }
 
-    const db = await connectToDatabase();
+    const coverUrl = resolveCoverUrl(req) || book.coverUrl || '';
     const updateData = {
       title: title.trim(),
       author: author.trim(),
@@ -172,6 +192,7 @@ exports.updateBook = async (req, res) => {
       category: category || 'Inne',
       language: language || 'polski',
       description: description || '',
+      coverUrl,
       discountPercent: discountPercent ? Number(discountPercent) : 0,
       discountedPrice: discountPercent ? Number(price) * (1 - Number(discountPercent) / 100) : null,
       updatedAt: new Date()

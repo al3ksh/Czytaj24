@@ -13,7 +13,7 @@
 
   <section class="mt-6 grid gap-10 md:grid-cols-[0.9fr_1.1fr]">
     <div class="glass-panel flex flex-col items-center justify-center p-8">
-      <img src="/bookspng.png" alt="<%= book.title %>" class="w-48 rounded-2xl shadow-2xl shadow-black/20 dark:shadow-black/40" />
+      <img src="<%= book.coverUrl || '/bookspng.png' %>" alt="<%= book.title %>" class="w-48 rounded-2xl shadow-2xl shadow-black/20 dark:shadow-black/40" />
       <div class="mt-6 space-y-2 text-center">
         <p class="text-xs uppercase tracking-[0.35em] text-brand"><%= book.category || 'Literatura' %></p>
         <h1 class="font-display text-3xl text-slate-900 dark:text-white"><%= book.title %></h1>
@@ -53,7 +53,10 @@
           </div>
           <div>
             <dt class="text-xs uppercase tracking-[0.3em] text-slate-400">Ocena społeczności</dt>
-            <dd class="font-semibold text-slate-900 dark:text-slate-100"><%= (book.aggregatedRating || 4.7).toFixed(1) %> / 5.0</dd>
+            <dd class="font-semibold text-slate-900 dark:text-slate-100">
+              <%= (ratingStats?.aggregatedRating ?? book.aggregatedRating ?? 0).toFixed(1) %> / 5.0
+              <span class="text-xs text-slate-500">(<%= ratingStats?.ratingCount ?? book.ratingCount ?? 0 %>)</span>
+            </dd>
           </div>
           <div>
             <dt class="text-xs uppercase tracking-[0.3em] text-slate-400">Status</dt>
@@ -103,6 +106,20 @@
       <% } %>
     </div>
   </section>
+
+  <section class="mt-12 space-y-6" id="reviews-section" data-book-id="<%= book._id %>">
+    <%- include('partials/reviewsSection', {
+      book,
+      reviews,
+      ratingStats,
+      reviewPagination,
+      reviewErrors,
+      editReviewId,
+      userName,
+      userRole,
+      userId
+    }) %>
+  </section>
 </main>
 
-<%- include('partials/layoutEnd') %>
+<%- include('partials/layoutEnd', { extraScripts: ['/js/reviews.js'] }) %>

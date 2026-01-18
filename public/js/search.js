@@ -80,7 +80,8 @@
     const booksHTML = items.map((book) => {
       const price = Number(book.discountedPrice ?? book.price ?? 0).toFixed(2);
       const basePrice = Number(book.price ?? price).toFixed(2);
-      const rating = (book.aggregatedRating ?? 4.7).toFixed(1);
+      const ratingValue = Number(book.aggregatedRating ?? 0);
+      const ratingCount = Number(book.ratingCount ?? 0);
       const hasDiscount = book.discountedPrice && book.discountedPrice < book.price;
       
       return `
@@ -103,11 +104,16 @@
             <p class="text-sm text-slate-500 dark:text-slate-400">by ${book.author}</p>
           </div>
 
-          <div class="flex items-center gap-2 text-sm text-amber-500">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.88.99 6.85L12 17.77 6.01 21l.99-6.85-5-4.88 6.91-1.01z" />
-            </svg>
-            <span class="font-semibold">${rating}</span>
+          <div class="flex items-center gap-2 text-sm">
+            ${ratingValue > 0 ? `
+              <span class="flex items-center gap-1 text-amber-500">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.88.99 6.85L12 17.77 6.01 21l.99-6.85-5-4.88 6.91-1.01z" />
+                </svg>
+                <span class="font-semibold">${ratingValue.toFixed(1)}</span>
+                ${ratingCount > 0 ? `<span class="text-slate-400">•</span><span class="text-slate-500 dark:text-slate-400">${ratingCount}</span>` : ''}
+              </span>
+            ` : '<span class="text-slate-500 dark:text-slate-400">Brak ocen</span>'}
             <span class="text-slate-400">•</span>
             <span class="uppercase text-slate-500 dark:text-slate-400">${book.language === 'angielski' ? 'EN' : 'PL'}</span>
           </div>
