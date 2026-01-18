@@ -67,7 +67,7 @@
         </dl>
       </div>
 
-      <% if (userName && book.stock > 0) { %>
+      <% if (book.stock > 0) { %>
         <div class="glass-panel p-8">
           <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Dodaj do koszyka</h2>
           <form method="POST" action="/cart" class="add-to-cart-form mt-4 flex flex-col gap-4">
@@ -90,14 +90,6 @@
               Dodaj do koszyka
             </button>
           </form>
-        </div>
-      <% } else if (!userName) { %>
-        <div class="glass-panel p-8 text-center text-slate-900 dark:text-white">
-          <p class="font-semibold">Zaloguj się, aby dodać książkę do koszyka.</p>
-          <div class="mt-4 flex gap-3 justify-center">
-            <a href="/login" class="rounded-full border px-4 py-2 text-sm font-semibold transition border-slate-300 text-slate-700 hover:border-slate-500 dark:border-white/10 dark:text-white dark:hover:bg-white/10">Logowanie</a>
-            <a href="/register" class="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark">Rejestracja</a>
-          </div>
         </div>
       <% } else { %>
         <div class="glass-panel p-8 text-center text-rose-200">

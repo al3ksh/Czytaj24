@@ -20,11 +20,18 @@ async function connectToDatabase() {
 async function ensureIndexes(db) {
   const books = db.collection('books');
   const orders = db.collection('orders');
+  const carts = db.collection('carts');
+  const reviews = db.collection('reviews');
 
   
   const [bookIndexes, orderIndexes] = await Promise.all([
     books.indexes(),
     orders.indexes(),
+  ]);
+
+  const [cartIndexes, reviewIndexes] = await Promise.all([
+    carts.indexes(),
+    reviews.indexes(),
   ]);
 
   const ops = [];
@@ -56,6 +63,22 @@ async function ensureIndexes(db) {
 
   if (!orderIndexes.some((i) => i.name === 'orders_user_date_idx')) {
     ops.push(orders.createIndex({ userId: 1, date: -1 }, { name: 'orders_user_date_idx' }));
+  }
+
+  if (!cartIndexes.some((i) => i.name === 'carts_expiresAt_ttl')) {
+    ops.push(carts.createIndex({ expiresAt: 1 }, { name: 'carts_expiresAt_ttl', expireAfterSeconds: 0 }));
+  }
+
+  if (!cartIndexes.some((i) => i.name === 'carts_user_idx')) {
+    ops.push(carts.createIndex({ userId: 1 }, { name: 'carts_user_idx' }));
+  }
+
+  if (!cartIndexes.some((i) => i.name === 'carts_guest_idx')) {
+    ops.push(carts.createIndex({ guestId: 1 }, { name: 'carts_guest_idx' }));
+  }
+
+  if (!reviewIndexes.some((i) => i.name === 'reviews_book_date_idx')) {
+    ops.push(reviews.createIndex({ bookId: 1, createdAt: -1 }, { name: 'reviews_book_date_idx' }));
   }
 
   if (ops.length === 0) return;

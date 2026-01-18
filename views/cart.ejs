@@ -85,12 +85,24 @@
           <% } %>
         </div>
 
-        <a
-          href="/order"
-          class="inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark"
-        >
-          Przejdź do checkoutu
-        </a>
+        <% if (isGuest) { %>
+          <div class="rounded-2xl border border-amber-200/60 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
+            Zaloguj się, aby dokończyć zamówienie. Koszyk gościa wygasa po 7 dniach.
+          </div>
+          <a
+            href="/login"
+            class="inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark"
+          >
+            Zaloguj się i zamów
+          </a>
+        <% } else { %>
+          <a
+            href="/order"
+            class="inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow shadow-orange-500/40 transition hover:bg-brand-dark"
+          >
+            Przejdź do checkoutu
+          </a>
+        <% } %>
         <form action="/cart/clear" method="POST" class="cart-action" data-endpoint="/cart/clear">
           <button type="submit" class="w-full rounded-full border px-4 py-2 text-sm font-semibold transition border-slate-300 text-slate-700 hover:border-slate-500 dark:border-white/10 dark:text-white dark:hover:bg-white/10">
             Wyczyść koszyk

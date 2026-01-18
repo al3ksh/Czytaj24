@@ -10,22 +10,37 @@ const toObjectId = (value) => {
   }
 };
 
+const guestExpiryDate = () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+const buildOwnerQuery = (owner) => {
+  if (!owner) return {};
+  if (owner.type === 'guest') {
+    return { guestId: owner.id };
+  }
+  const userId = toObjectId(owner.id);
+  return userId ? { userId } : {};
+};
+
 class Cart {
-  static async getCartByUserId(userId) {
+  static async getCartByOwner(owner) {
     const db = await connectToDatabase();
-    return db.collection('carts').findOne({ userId: new ObjectId(userId) });
+    const query = buildOwnerQuery(owner);
+    if (!Object.keys(query).length) return null;
+    return db.collection('carts').findOne(query);
   }
 
-  static async createCart(userId) {
+  static async createCart(owner) {
     const db = await connectToDatabase();
-    const newCart = { userId: new ObjectId(userId), items: [], total: 0 };
-    await db.collection('carts').insertOne(newCart);
-    return newCart;
+    const cart = owner.type === 'guest'
+      ? { guestId: owner.id, items: [], total: 0, expiresAt: guestExpiryDate() }
+      : { userId: new ObjectId(owner.id), items: [], total: 0 };
+    await db.collection('carts').insertOne(cart);
+    return cart;
   }
 
-  static async addItemToCart(userId, book) {
+  static async addItemToCart(owner, book) {
     const db = await connectToDatabase();
-    const cart = await this.getCartByUserId(userId);
+    const cart = await this.getCartByOwner(owner);
     const bookId = toObjectId(book.bookId);
 
     if (!bookId) {
@@ -45,8 +60,23 @@ class Cart {
         throw new Error(`Nie możesz dodać więcej niż ${stock} sztuk.`);
       }
 
-      const newCart = {
-        userId: new ObjectId(userId),
+      const newCart = owner.type === 'guest'
+        ? {
+          guestId: owner.id,
+          items: [
+            {
+              bookId,
+              title: bookDetails.title,
+              author: bookDetails.author,
+              price: unitPrice,
+              quantity: book.quantity,
+            },
+          ],
+          total: unitPrice * book.quantity,
+          expiresAt: guestExpiryDate(),
+        }
+        : {
+        userId: new ObjectId(owner.id),
         items: [
           {
             bookId,
@@ -83,15 +113,24 @@ class Cart {
 
     cart.total = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+    const updatePayload = {
+      items: cart.items,
+      total: cart.total,
+    };
+
+    if (owner.type === 'guest') {
+      updatePayload.expiresAt = guestExpiryDate();
+    }
+
     await db.collection('carts').updateOne(
-      { userId: new ObjectId(userId) },
-      { $set: { items: cart.items, total: cart.total } }
+      buildOwnerQuery(owner),
+      { $set: updatePayload }
     );
   }
 
-  static async increaseItemQuantity(userId, bookId) {
+  static async increaseItemQuantity(owner, bookId) {
     const db = await connectToDatabase();
-    const cart = await this.getCartByUserId(userId);
+    const cart = await this.getCartByOwner(owner);
     if (!cart) throw new Error('Koszyk nie został znaleziony.');
 
     const normalizedId = toObjectId(bookId);
@@ -112,15 +151,23 @@ class Cart {
     item.quantity += 1;
     cart.total = cart.items.reduce((sum, entry) => sum + entry.price * entry.quantity, 0);
 
+    const updatePayload = {
+      items: cart.items,
+      total: cart.total,
+    };
+    if (owner.type === 'guest') {
+      updatePayload.expiresAt = guestExpiryDate();
+    }
+
     await db.collection('carts').updateOne(
-      { userId: new ObjectId(userId) },
-      { $set: { items: cart.items, total: cart.total } }
+      buildOwnerQuery(owner),
+      { $set: updatePayload }
     );
   }
 
-  static async decreaseItemQuantity(userId, bookId) {
+  static async decreaseItemQuantity(owner, bookId) {
     const db = await connectToDatabase();
-    const cart = await this.getCartByUserId(userId);
+    const cart = await this.getCartByOwner(owner);
     if (!cart) throw new Error('Koszyk nie został znaleziony.');
 
     const normalizedId = toObjectId(bookId);
@@ -139,15 +186,23 @@ class Cart {
 
     cart.total = cart.items.reduce((sum, entry) => sum + entry.price * entry.quantity, 0);
 
+    const updatePayload = {
+      items: cart.items,
+      total: cart.total,
+    };
+    if (owner.type === 'guest') {
+      updatePayload.expiresAt = guestExpiryDate();
+    }
+
     await db.collection('carts').updateOne(
-      { userId: new ObjectId(userId) },
-      { $set: { items: cart.items, total: cart.total } }
+      buildOwnerQuery(owner),
+      { $set: updatePayload }
     );
   }
 
-  static async removeItemFromCart(userId, bookId) {
+  static async removeItemFromCart(owner, bookId) {
     const db = await connectToDatabase();
-    const cart = await this.getCartByUserId(userId);
+    const cart = await this.getCartByOwner(owner);
     if (!cart) throw new Error('Koszyk nie został znaleziony.');
 
     const normalizedId = toObjectId(bookId);
@@ -161,18 +216,88 @@ class Cart {
 
     const updatedTotal = updatedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+    const updatePayload = {
+      items: updatedItems,
+      total: updatedTotal,
+    };
+    if (owner.type === 'guest') {
+      updatePayload.expiresAt = guestExpiryDate();
+    }
+
     await db.collection('carts').updateOne(
-      { userId: new ObjectId(userId) },
-      { $set: { items: updatedItems, total: updatedTotal } }
+      buildOwnerQuery(owner),
+      { $set: updatePayload }
     );
   }
 
-  static async clearCart(userId) {
+  static async clearCart(owner) {
     const db = await connectToDatabase();
+    const updatePayload = { items: [], total: 0 };
+    if (owner.type === 'guest') {
+      updatePayload.expiresAt = guestExpiryDate();
+    }
     await db.collection('carts').updateOne(
-      { userId: new ObjectId(userId) },
-      { $set: { items: [], total: 0 } }
+      buildOwnerQuery(owner),
+      { $set: updatePayload }
     );
+  }
+
+  static async mergeGuestCart(guestId, userId) {
+    if (!guestId || !userId) return;
+
+    const db = await connectToDatabase();
+    const guestCart = await db.collection('carts').findOne({ guestId });
+    if (!guestCart || !guestCart.items?.length) return;
+
+    const userObjectId = toObjectId(userId);
+    if (!userObjectId) return;
+
+    const userCart = await db.collection('carts').findOne({ userId: userObjectId });
+    const mergedItems = userCart?.items ? [...userCart.items] : [];
+
+    for (const guestItem of guestCart.items) {
+      const bookId = toObjectId(guestItem.bookId);
+      if (!bookId) continue;
+
+      const book = await db.collection('books').findOne({ _id: bookId });
+      if (!book) continue;
+
+      const unitPrice = salePriceFor(book);
+      const existingItem = mergedItems.find((item) => item.bookId.toString() === bookId.toString());
+      const incomingQty = Number(guestItem.quantity || 0);
+      const currentQty = Number(existingItem?.quantity || 0);
+      const nextQty = Math.min(book.stock, currentQty + incomingQty);
+
+      if (nextQty <= 0) continue;
+
+      if (existingItem) {
+        existingItem.quantity = nextQty;
+        existingItem.price = unitPrice;
+        existingItem.title = book.title;
+        existingItem.author = book.author;
+      } else {
+        mergedItems.push({
+          bookId,
+          title: book.title,
+          author: book.author,
+          price: unitPrice,
+          quantity: Math.min(book.stock, incomingQty),
+        });
+      }
+    }
+
+    const mergedTotal = mergedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    if (!userCart) {
+      await db.collection('carts').insertOne({ userId: userObjectId, items: mergedItems, total: mergedTotal });
+    } else {
+      await db.collection('carts').updateOne(
+        { userId: userObjectId },
+        { $set: { items: mergedItems, total: mergedTotal } }
+      );
+    }
+
+    await db.collection('carts').deleteOne({ guestId });
   }
 }
 

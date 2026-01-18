@@ -1,4 +1,5 @@
 const UserRepository = require('../repositories/UserRepository');
+const Cart = require('../models/cart');
 
 const profileDateFormatter = new Intl.DateTimeFormat('pl-PL', {
   year: 'numeric',
@@ -63,6 +64,8 @@ exports.register = async (req, res) => {
     req.session.userId = newUser._id;
     req.session.userName = newUser.name;
     req.session.userRole = newUser.role;
+    await Cart.mergeGuestCart(req.session.guestId, newUser._id);
+    delete req.session.guestId;
 
     res.redirect('/');
   } catch (error) {
@@ -103,6 +106,8 @@ exports.login = async (req, res) => {
     req.session.userId = user._id;
     req.session.userName = user.name;
     req.session.userRole = user.role;
+    await Cart.mergeGuestCart(req.session.guestId, user._id);
+    delete req.session.guestId;
     res.redirect('/');
   } catch (error) {
     console.error('Blad podczas logowania:', error);
