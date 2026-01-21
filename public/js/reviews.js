@@ -55,6 +55,39 @@
   };
 
   const bindInteractions = () => {
+    reviewsSection.querySelectorAll('[data-rating-group]').forEach((group) => {
+      const inputs = group.querySelectorAll('input[type="radio"][name="rating"]');
+      const output = group.querySelector('[data-rating-output]');
+
+      const updateStars = (value) => {
+        group.querySelectorAll('[data-star]').forEach((label) => {
+          const starValue = Number(label.dataset.star || 0);
+          const icon = label.querySelector('[data-star-icon]');
+          if (!icon) return;
+          if (starValue <= value) {
+            icon.classList.add('text-amber-500');
+            icon.classList.remove('text-slate-300');
+            icon.classList.remove('dark:text-slate-600');
+          } else {
+            icon.classList.remove('text-amber-500');
+            icon.classList.add('text-slate-300');
+            icon.classList.add('dark:text-slate-600');
+          }
+        });
+
+        if (output) {
+          output.textContent = value ? `${value}/5` : '';
+        }
+      };
+
+      const current = group.querySelector('input[type="radio"][name="rating"]:checked');
+      updateStars(current ? Number(current.value) : 0);
+
+      inputs.forEach((input) => {
+        input.addEventListener('change', () => updateStars(Number(input.value)));
+      });
+    });
+
     reviewsSection.querySelectorAll('form[data-review-form]').forEach((form) => {
       form.addEventListener('submit', (event) => {
         event.preventDefault();

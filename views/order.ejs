@@ -50,7 +50,7 @@
         <p class="text-xs uppercase tracking-[0.35em] text-brand">Krok 2</p>
         <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Dane odbiorcy i płatność</h2>
       </div>
-      <form method="POST" action="/order/confirm" class="mt-6 space-y-6" id="checkout-form">
+      <form method="POST" action="/order/confirm" class="mt-6 space-y-6" id="checkout-form" novalidate>
         <div class="grid gap-5 md:grid-cols-2">
           <div>
             <label for="name" class="block text-xs font-medium uppercase tracking-wide text-slate-600 dark:text-slate-300">
@@ -61,7 +61,6 @@
               type="text"
               name="name"
               class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-              required
             />
           </div>
 
@@ -76,7 +75,6 @@
               placeholder="np. 123-456-789"
               pattern="[0-9\s\-+()]+"
               class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-              required
             />
           </div>
         </div>
@@ -91,7 +89,6 @@
             name="street"
             placeholder="np. ul. Główna 15/3"
             class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-            required
           />
         </div>
 
@@ -105,7 +102,6 @@
               type="text"
               name="city"
               class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-              required
             />
           </div>
 
@@ -120,7 +116,6 @@
               placeholder="00-000"
               pattern="[0-9]{2}-[0-9]{3}"
               class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-              required
             />
           </div>
         </div>
@@ -133,7 +128,6 @@
             id="delivery"
             name="delivery"
             class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-            required
           >
             <option value="">-- Wybierz sposób dostawy --</option>
             <option value="courier">Kurier - 15 PLN (1-2 dni robocze)</option>
@@ -151,7 +145,6 @@
             id="payment"
             name="paymentMethod"
             class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-            required
           >
             <option value="">-- Wybierz metodę płatności --</option>
             <option value="card">Karta płatnicza / Przelew</option>
@@ -245,8 +238,6 @@
   const paymentSelect = document.getElementById('payment');
   const cardFields = document.getElementById('card-fields');
   const blikFields = document.getElementById('blik-fields');
-  const cardInputs = cardFields?.querySelectorAll('input') || [];
-  const blikInputs = blikFields?.querySelectorAll('input') || [];
 
   paymentSelect?.addEventListener('change', (e) => {
     const method = e.target.value;
@@ -256,16 +247,10 @@
     blikFields?.classList.add('hidden');
     
     
-    cardInputs.forEach(input => input.removeAttribute('required'));
-    blikInputs.forEach(input => input.removeAttribute('required'));
-    
-    
     if (method === 'card') {
       cardFields?.classList.remove('hidden');
-      cardInputs.forEach(input => input.setAttribute('required', 'required'));
     } else if (method === 'blik') {
       blikFields?.classList.remove('hidden');
-      blikInputs.forEach(input => input.setAttribute('required', 'required'));
     }
   });
 

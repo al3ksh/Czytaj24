@@ -9,18 +9,25 @@
 <% if (userName) { %>
   <div class="glass-panel p-6">
     <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Dodaj opinię</h3>
-    <form method="POST" action="/book/<%= book._id %>/reviews" class="mt-4 space-y-4" data-review-form>
+    <form method="POST" action="/book/<%= book._id %>/reviews" class="mt-4 space-y-4" data-review-form novalidate>
       <div>
         <label class="text-xs uppercase tracking-[0.3em] text-slate-500">Ocena</label>
-        <div class="mt-2 flex items-center gap-3">
+        <div class="mt-2 flex items-center gap-3" data-rating-group>
           <% for (let star = 1; star <= 5; star++) { %>
-            <label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-              <input type="radio" name="rating" value="<%= star %>" class="h-4 w-4" <%= star === 5 ? 'checked' : '' %> <%= star === 1 ? 'required' : '' %> />
-              <span><%= star %></span>
+            <label class="group cursor-pointer" data-star="<%= star %>">
+              <input
+                type="radio"
+                name="rating"
+                value="<%= star %>"
+                class="sr-only peer"
+              />
+              <span class="text-2xl text-slate-300 transition group-hover:text-amber-400 dark:text-slate-600 dark:group-hover:text-amber-300" data-star-icon>★</span>
+              <span class="sr-only"><%= star %></span>
             </label>
           <% } %>
+          <span class="text-xs font-semibold text-slate-500 dark:text-slate-300" data-rating-output></span>
         </div>
-        <% if (reviewErrors && reviewErrors.rating) { %>
+        <% if (reviewErrors && !reviewErrors.reviewId && reviewErrors.rating) { %>
           <p class="mt-2 text-xs text-rose-600 dark:text-rose-300"><%= reviewErrors.rating %></p>
         <% } %>
       </div>
@@ -32,9 +39,8 @@
           rows="4"
           class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand focus:ring-brand dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           placeholder="Co sądzisz o tej książce?"
-          required
         ></textarea>
-        <% if (reviewErrors && reviewErrors.comment) { %>
+        <% if (reviewErrors && !reviewErrors.reviewId && reviewErrors.comment) { %>
           <p class="mt-2 text-xs text-rose-600 dark:text-rose-300"><%= reviewErrors.comment %></p>
         <% } %>
       </div>
@@ -81,13 +87,21 @@
         </div>
         <% if (editReviewId && String(review._id) === String(editReviewId) && (userRole === 'admin' || (userId && String(review.userId) === String(userId)))) { %>
           <form method="POST" action="/book/<%= book._id %>/reviews/<%= review._id %>/edit" class="mt-4 space-y-3" data-review-form>
-            <div class="flex flex-wrap items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+            <div class="flex items-center gap-3" data-rating-group>
               <% for (let star = 1; star <= 5; star++) { %>
-                <label class="flex items-center gap-2">
-                  <input type="radio" name="rating" value="<%= star %>" class="h-4 w-4" <%= review.rating === star ? 'checked' : '' %> />
-                  <span><%= star %></span>
+                <label class="group cursor-pointer" data-star="<%= star %>">
+                  <input
+                    type="radio"
+                    name="rating"
+                    value="<%= star %>"
+                    class="sr-only peer"
+                    <%= review.rating === star ? 'checked' : '' %>
+                  />
+                  <span class="text-xl text-slate-300 transition group-hover:text-amber-400 dark:text-slate-600 dark:group-hover:text-amber-300" data-star-icon>★</span>
+                  <span class="sr-only"><%= star %></span>
                 </label>
               <% } %>
+              <span class="text-xs font-semibold text-slate-500 dark:text-slate-300" data-rating-output></span>
             </div>
             <% if (reviewErrors && reviewErrors.reviewId && String(reviewErrors.reviewId) === String(review._id) && reviewErrors.rating) { %>
               <p class="text-xs text-rose-600 dark:text-rose-300"><%= reviewErrors.rating %></p>

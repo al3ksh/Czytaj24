@@ -7,7 +7,16 @@
   const updateToggleState = (toggle, theme) => {
     if (!toggle) return;
     const isDark = theme === 'dark';
-    toggle.textContent = isDark ? 'Tryb jasny' : 'Tryb ciemny';
+    const label = toggle.querySelector('[data-theme-label]');
+    const icon = toggle.querySelector('[data-theme-icon]');
+    if (label) {
+      label.textContent = isDark ? 'LIGHT' : 'DARK';
+    } else {
+      toggle.textContent = isDark ? 'LIGHT' : 'DARK';
+    }
+    if (icon) {
+      icon.textContent = isDark ? '☀️' : '🌙';
+    }
     toggle.setAttribute('aria-pressed', String(isDark));
     toggle.setAttribute('aria-label', isDark ? 'Włącz tryb jasny' : 'Włącz tryb ciemny');
   };
@@ -72,6 +81,80 @@
   };
 
   window.CzytajToast = showToast;
+
+  const url = new URL(window.location.href);
+  const errorMessage = url.searchParams.get('error');
+  const successMessage = url.searchParams.get('success');
+  if (errorMessage || successMessage) {
+    showToast(errorMessage || successMessage, errorMessage ? 'error' : 'success');
+    url.searchParams.delete('error');
+    url.searchParams.delete('success');
+    window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+  }
+
+  const collapsibles = document.querySelectorAll('[data-collapsible]');
+  if (collapsibles.length) {
+    const setState = (wrapper, open, immediate = false) => {
+      const content = wrapper.querySelector('[data-collapsible-content]');
+      const toggle = wrapper.querySelector('[data-collapsible-toggle]');
+      const label = wrapper.querySelector('[data-collapsible-label]');
+      const icon = wrapper.querySelector('[data-collapsible-icon]');
+
+      if (!content || !toggle) return;
+
+      if (immediate) {
+        content.style.transition = 'none';
+      } else {
+        content.style.transition = '';
+      }
+
+      if (open) {
+        content.style.maxHeight = `${content.scrollHeight}px`;
+        content.style.opacity = '1';
+        content.style.pointerEvents = 'auto';
+        if (icon) icon.classList.add('rotate-180');
+      } else {
+        content.style.maxHeight = '0px';
+        content.style.opacity = '0';
+        content.style.pointerEvents = 'none';
+        if (icon) icon.classList.remove('rotate-180');
+      }
+
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (label) label.textContent = open ? 'Zwiń' : 'Rozwiń';
+    };
+
+    collapsibles.forEach((wrapper) => {
+      const content = wrapper.querySelector('[data-collapsible-content]');
+      const toggle = wrapper.querySelector('[data-collapsible-toggle]');
+      const id = wrapper.dataset.collapsibleId || 'section';
+      const storageKey = `czytaj24-collapsible:${id}`;
+
+      if (!content || !toggle) return;
+
+      const saved = localStorage.getItem(storageKey);
+      const open = saved ? saved === 'open' : true;
+      setState(wrapper, open, true);
+
+      requestAnimationFrame(() => {
+        setState(wrapper, open);
+      });
+
+      toggle.addEventListener('click', () => {
+        const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+        const nextOpen = !isOpen;
+        setState(wrapper, nextOpen);
+        localStorage.setItem(storageKey, nextOpen ? 'open' : 'closed');
+      });
+
+      window.addEventListener('resize', () => {
+        const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+        if (isOpen) {
+          content.style.maxHeight = `${content.scrollHeight}px`;
+        }
+      });
+    });
+  }
 
   document.querySelectorAll('.add-to-cart-form').forEach((form) => {
     form.addEventListener('submit', async (event) => {

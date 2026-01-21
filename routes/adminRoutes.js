@@ -1,9 +1,11 @@
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
+const { ObjectId } = require('mongodb');
 const router = express.Router();
 const isAdmin = require('../middleware/isAdmin');
 const adminController = require('../controllers/adminController');
+const { connectToDatabase } = require('../config/db');
 
 const uploadStorage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -43,5 +45,35 @@ router.post('/books/:id/delete', isAdmin, adminController.deleteBook);
 
 router.get('/orders', isAdmin, adminController.getOrders);
 router.post('/orders/:id/status', isAdmin, adminController.updateOrderStatus);
+
+router.use(async (err, req, res, next) => {
+	if (!err) return next();
+
+	const isUploadError = err instanceof multer.MulterError || err.message?.includes('Dozwolone formaty okładek');
+	if (!isUploadError) {
+		return next(err);
+	}
+
+	let book = null;
+	if (req.params?.id) {
+		try {
+			const db = await connectToDatabase();
+			book = await db.collection('books').findOne({ _id: new ObjectId(req.params.id) });
+		} catch (error) {
+			book = null;
+		}
+	}
+
+	const errorMessage = err.code === 'LIMIT_FILE_SIZE'
+		? 'Plik okładki jest zbyt duży (max 3MB).'
+		: err.message || 'Nie udało się przesłać okładki.';
+
+	return res.status(400).render('admin/bookForm', {
+		userName: req.session.userName,
+		book,
+		errors: { general: errorMessage },
+		values: req.body || {},
+	});
+});
 
 module.exports = router;

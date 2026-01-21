@@ -38,8 +38,13 @@ class BookRepository {
           { discountedPrice: priceCondition },
           {
             $and: [
-              { discountedPrice: { $exists: false } },
-              { price: fallbackCondition }
+              {
+                $or: [
+                  { discountedPrice: { $exists: false } },
+                  { discountedPrice: null },
+                ],
+              },
+              { price: fallbackCondition },
             ],
           },
         ],

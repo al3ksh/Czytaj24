@@ -9,73 +9,90 @@
 
 <main class="mx-auto flex max-w-6xl flex-col gap-10 px-4 pt-10">
   
-  <section class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-    <article class="glass-panel p-10 text-slate-900 dark:text-slate-50">
-      <p class="text-xs uppercase tracking-[0.4em] text-brand">Nowa era czytania</p>
-      <h1 class="mt-4 font-display text-4xl leading-tight sm:text-5xl">
-        Odkryj świat literatury w najlepszym wydaniu.
-      </h1>
-      <p class="mt-4 text-lg text-slate-500 dark:text-slate-300">
-        Znajdź swoją następną ulubioną książkę dzięki naszej inteligentnej wyszukiwarce i szerokiej ofercie.
-      </p>
-      <div class="mt-8 flex flex-wrap gap-4">
-        <a
-          href="#kolekcje"
-          class="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900"
-        >
-          Zobacz sekcje
-        </a>
-        <a
-          href="/orders"
-          class="rounded-full border border-slate-200/70 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-400 dark:border-slate-700 dark:text-white"
-        >
-          Historia zamówień
-        </a>
-      </div>
-      <ul class="mt-8 grid gap-4 text-sm text-slate-600 dark:text-slate-300 sm:grid-cols-2">
-        <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
-          <span class="text-2xl">✨</span>
-          Wygodny tryb czytania (Jasny/Ciemny)
-        </li>
-        <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
-          <span class="text-2xl">⚡</span>
-          Szybkie i płynne działanie
-        </li>
-        <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
-          <span class="text-2xl">🛡️</span>
-          Bezpieczne zakupy
-        </li>
-        <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
-          <span class="text-2xl">🛒</span>
-          Wygodny koszyk
-        </li>
-      </ul>
-    </article>
+  <section class="space-y-4" data-collapsible data-collapsible-id="front-panels">
+    <button
+      type="button"
+      class="flex w-full items-center justify-between rounded-2xl border border-slate-200/70 bg-white/70 px-4 py-3 text-left text-sm font-semibold text-slate-700 transition hover:border-slate-300 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+      data-collapsible-toggle
+      aria-expanded="true"
+      aria-controls="collapsible-front-panels"
+    >
+      <span class="text-xs uppercase tracking-[0.3em] text-slate-500">Sekcje informacyjne</span>
+      <span class="ml-auto mr-3 text-xs font-semibold" data-collapsible-label>Zwiń</span>
+      <svg data-collapsible-icon class="h-4 w-4 transition-transform" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08z" clip-rule="evenodd" />
+      </svg>
+    </button>
+    <div id="collapsible-front-panels" data-collapsible-content class="overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out">
+      <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <article class="glass-panel p-10 text-slate-900 dark:text-slate-50">
+          <p class="text-xs uppercase tracking-[0.4em] text-brand">Nowa era czytania</p>
+          <h1 class="mt-4 font-display text-4xl leading-tight sm:text-5xl">
+            Odkryj świat literatury w najlepszym wydaniu.
+          </h1>
+          <p class="mt-4 text-lg text-slate-500 dark:text-slate-300">
+            Znajdź swoją następną ulubioną książkę dzięki naszej inteligentnej wyszukiwarce i szerokiej ofercie.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-4">
+            <a
+              href="#kolekcje"
+              class="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+            >
+              Zobacz sekcje
+            </a>
+            <a
+              href="/orders"
+              class="rounded-full border border-slate-200/70 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-400 dark:border-slate-700 dark:text-white"
+            >
+              Historia zamówień
+            </a>
+          </div>
+          <ul class="mt-8 grid gap-4 text-sm text-slate-600 dark:text-slate-300 sm:grid-cols-2">
+            <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
+              <span class="text-2xl">✨</span>
+              Wygodny tryb czytania (Jasny/Ciemny)
+            </li>
+            <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
+              <span class="text-2xl">⚡</span>
+              Szybkie i płynne działanie
+            </li>
+            <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
+              <span class="text-2xl">🛡️</span>
+              Bezpieczne zakupy
+            </li>
+            <li class="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 dark:bg-white/5">
+              <span class="text-2xl">🛒</span>
+              Wygodny koszyk
+            </li>
+          </ul>
+        </article>
 
-    <aside class="grid gap-4">
-      <div class="glass-panel p-6 text-slate-900 dark:text-slate-100">
-        <p class="text-xs uppercase tracking-[0.35em] text-slate-500">Dlaczego my?</p>
-        <div class="mt-6 space-y-4">
-          <div>
-            <p class="text-3xl font-semibold">24h</p>
-            <p class="text-sm text-slate-500">Szybka wysyłka</p>
+        <aside class="grid gap-4">
+          <div class="glass-panel p-6 text-slate-900 dark:text-slate-100">
+            <p class="text-xs uppercase tracking-[0.35em] text-slate-500">Dlaczego my?</p>
+            <div class="mt-6 space-y-4">
+              <div>
+                <p class="text-3xl font-semibold">24h</p>
+                <p class="text-sm text-slate-500">Szybka wysyłka</p>
+              </div>
+              <div>
+                <p class="text-3xl font-semibold">100%</p>
+                <p class="text-sm text-slate-500">Zadowolonych klientów</p>
+              </div>
+            </div>
           </div>
-          <div>
-            <p class="text-3xl font-semibold">100%</p>
-            <p class="text-sm text-slate-500">Zadowolonych klientów</p>
+          <div class="glass-panel flex flex-col gap-4 p-6 text-slate-900 dark:text-white">
+            <p class="text-xs uppercase tracking-[0.35em] text-slate-500">Jak to działa?</p>
+            <div class="space-y-3 text-sm text-slate-500 dark:text-slate-300">
+              <p>1. Wybierz książkę</p>
+              <p>2. Dodaj do koszyka</p>
+              <p>3. Bezpieczna płatność</p>
+              <p>4. Szybka dostawa</p>
+            </div>
           </div>
-        </div>
+        </aside>
       </div>
-      <div class="glass-panel flex flex-col gap-4 p-6 text-slate-900 dark:text-white">
-        <p class="text-xs uppercase tracking-[0.35em] text-slate-500">Jak to działa?</p>
-        <div class="space-y-3 text-sm text-slate-500 dark:text-slate-300">
-          <p>1. Wybierz książkę</p>
-          <p>2. Dodaj do koszyka</p>
-          <p>3. Bezpieczna płatność</p>
-          <p>4. Szybka dostawa</p>
-        </div>
-      </div>
-    </aside>
+    </div>
   </section>
 
   
